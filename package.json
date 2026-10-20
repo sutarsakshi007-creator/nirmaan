@@ -6,6 +6,8 @@
   "scripts": {
     "start": "node server.js",
     "seed": "node seed.js",
+    "seed:5000": "node scripts/seed_5000.js",
+    "generate:dataset": "node scripts/generate_dataset.js",
     "dev": "node --watch server.js"
   },
   "repository": {
