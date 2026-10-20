@@ -136,6 +136,48 @@ Open your browser at:
 
 ---
 
+## ☁️ How to Host on Render (Step-by-Step Guide)
+
+You can host Mandi Mood on **[Render](https://render.com)** for free in just 3 steps:
+
+### Step 1: Set up a Free MongoDB Database on MongoDB Atlas
+1. Sign up for free at **[mongodb.com/cloud/atlas](https://www.mongodb.com/cloud/atlas)**.
+2. Create a free **M0 Sandbox** cluster (AWS / Mumbai or closest region).
+3. Under **Security → Database Access**, create a user (e.g. `mandiadmin`) and password.
+4. Under **Security → Network Access**, click **"Add IP Address"** and choose **"Allow Access from Anywhere"** (`0.0.0.0/0`).
+5. Click **"Connect" → "Drivers" (Node.js)** and copy your connection string:
+   ```text
+   mongodb+srv://<username>:<password>@cluster0.mongodb.net/mandi-mood?retryWrites=true&w=majority
+   ```
+
+### Step 2: Deploy on Render.com
+1. Go to **[dashboard.render.com](https://dashboard.render.com)** and sign in with GitHub.
+2. Click **"New +" → "Web Service"**.
+3. Select your repository: **`sutarsakshi007-creator/nirmaan`**.
+4. Configure the service settings:
+   - **Name**: `mandi-mood`
+   - **Region**: Singapore or Frankfurt (closest to India)
+   - **Branch**: `main`
+   - **Runtime**: `Node`
+   - **Build Command**: `npm install`
+   - **Start Command**: `node server.js`
+   - **Instance Type**: `Free`
+5. Scroll down to **Environment Variables** and add:
+   - `MONGO_URI`: *(Paste your MongoDB Atlas connection string from Step 1)*
+   - `NODE_ENV`: `production`
+   - `ADMIN_API_KEY`: `apmc-vashi-secret-2026` *(or choose your own passkey)*
+   - `ALLOWED_ORIGIN`: `*`
+6. Click **"Create Web Service"**.
+
+> [!TIP]
+> **Automatic Cold-Start Seeding**: The server automatically detects if the newly connected MongoDB Atlas database is empty and automatically inserts all 20 APMC Vashi items with their images, categories, and prices on first boot!
+
+### Step 3: Access Your Live Dashboard
+Once Render finishes building (usually 1-2 minutes), it will provide your live URL:
+👉 **`https://mandi-mood.onrender.com`**
+
+---
+
 ## 🗄️ Database Schema (`models/Rate.js`)
 
 | Field | Type | Description |

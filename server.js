@@ -13,6 +13,14 @@ const PORT = process.env.PORT || 3000;
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/mandi-mood';
 const NODE_ENV = process.env.NODE_ENV || 'development';
 
+// Enable proxy trust for reverse proxies like Render / Cloudflare
+app.set('trust proxy', 1);
+
+// Health check endpoint for Render / cloud monitoring
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok', uptime: Math.round(process.uptime()), timestamp: new Date().toISOString() });
+});
+
 // 1. Security Headers via Helmet (with CSP configured for Google Fonts & Canvas poster)
 app.use(helmet({
   contentSecurityPolicy: {
@@ -91,6 +99,20 @@ async function startServer() {
     console.log('Connecting to MongoDB at:', MONGO_URI);
     await mongoose.connect(MONGO_URI);
     console.log('Connected to MongoDB (Mandi Mood DB)');
+
+    // Auto-seed if database is freshly created / empty (e.g. Render cold start)
+    try {
+      const Rate = require('./models/Rate');
+      const sampleRates = require('./sampleRates');
+      const count = await Rate.countDocuments();
+      if (count === 0) {
+        console.log('📦 Database is empty. Auto-seeding 20 APMC Vashi wholesale items...');
+        await Rate.insertMany(sampleRates);
+        console.log('✅ Auto-seed completed successfully!');
+      }
+    } catch (seedErr) {
+      console.warn('⚠️ Auto-seed check skipped or encountered non-critical error:', seedErr.message);
+    }
 
     app.listen(PORT, () => {
       console.log(`
