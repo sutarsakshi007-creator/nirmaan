@@ -13,7 +13,8 @@ const state = {
   selectedCategory: 'all',
   searchQuery: '',
   sortOption: 'default',
-  editingRateId: null
+  editingRateId: null,
+  selectedDishIndex: 0
 };
 
 // DOM Elements
@@ -356,7 +357,7 @@ window.filterByItemName = function(nameEn) {
   document.getElementById('ratesSection').scrollIntoView({ behavior: 'smooth' });
 };
 
-// 2. Cook This Today
+// 2. Cook This Today - Multi-Dish Smartest Pick
 function renderCookToday() {
   const dict = translations[state.currentLang] || translations.en;
   if (!state.cookToday || !state.cookToday.vegetables || state.cookToday.vegetables.length === 0) {
@@ -364,7 +365,13 @@ function renderCookToday() {
     return;
   }
 
-  const { vegetables, dish } = state.cookToday;
+  const { vegetables } = state.cookToday;
+  const dishes = state.cookToday.dishes && state.cookToday.dishes.length > 0 
+    ? state.cookToday.dishes 
+    : [state.cookToday.dish];
+  
+  const activeIndex = Math.min(state.selectedDishIndex || 0, dishes.length - 1);
+  const dish = dishes[activeIndex] || dishes[0];
 
   // Recipe steps based on current language
   let recipeSteps = dish.recipe_mr;
@@ -376,6 +383,18 @@ function renderCookToday() {
     recipeSteps = dish.recipe_en;
     dishTitle = dish.title_en;
   }
+
+  // Dish tabs row
+  const tabsHtml = dishes.map((d, idx) => {
+    const label = state.currentLang === 'mr' ? d.type_label_mr :
+                  state.currentLang === 'hi' ? d.type_label_hi :
+                  d.type_label_en;
+    return `
+      <button type="button" class="dish-tab-btn ${idx === activeIndex ? 'active' : ''}" onclick="selectDishIndex(${idx})">
+        ${label}
+      </button>
+    `;
+  }).join('');
 
   const veggiesHtml = vegetables.map(v => {
     const photoHtml = v.image_url ? `
@@ -411,10 +430,21 @@ function renderCookToday() {
         </div>
       </div>
 
+      <!-- Multiple Dishes Selector Tabs -->
+      <div class="dish-tabs-row" role="tablist">
+        ${tabsHtml}
+      </div>
+
+      <div class="dish-meta-row">
+        <span class="dish-meta-chip">⏱️ ${dish.time || '20 mins'}</span>
+        <span class="dish-meta-chip">⚡ ${dish.difficulty || 'Easy'}</span>
+        <span class="dish-meta-chip">👨‍👩‍👧‍👦 ${dish.servings || '4 persons'}</span>
+      </div>
+
       <div class="cheapest-veggies-showcase">
         <div class="veggies-label">
           <span>🥕</span>
-          <span>Today's 3 Lowest APMC Vegetables</span>
+          <span>Today's 3 Lowest APMC Vegetables Used in These Dishes</span>
         </div>
         <div class="veggies-grid">
           ${veggiesHtml}
@@ -439,6 +469,11 @@ function renderCookToday() {
     </div>
   `;
 }
+
+window.selectDishIndex = function(index) {
+  state.selectedDishIndex = index;
+  renderCookToday();
+};
 
 // 3. Today's Rates Grid
 function renderRatesGrid() {
