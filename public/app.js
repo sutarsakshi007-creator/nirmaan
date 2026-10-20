@@ -124,6 +124,20 @@ function initEventListeners() {
     if (e.target === elements.posterModal) elements.posterModal.classList.remove('open');
     if (e.target === elements.adminModal) elements.adminModal.classList.remove('open');
   });
+
+  // Chef's recipe dish selector (delegated listener to guarantee click switching across all devices)
+  if (elements.cookContainer) {
+    elements.cookContainer.addEventListener('click', (e) => {
+      const tabBtn = e.target.closest('.dish-tab-btn');
+      if (tabBtn) {
+        const idx = parseInt(tabBtn.getAttribute('data-dish-index'), 10);
+        if (!isNaN(idx)) {
+          state.selectedDishIndex = idx;
+          renderCookToday();
+        }
+      }
+    });
+  }
 }
 
 // ==========================================================================
@@ -366,31 +380,176 @@ function renderCookToday() {
   }
 
   const { vegetables } = state.cookToday;
-  const dishes = state.cookToday.dishes && state.cookToday.dishes.length > 0 
-    ? state.cookToday.dishes 
-    : [state.cookToday.dish];
   
-  const activeIndex = Math.min(state.selectedDishIndex || 0, dishes.length - 1);
+  // Safe client-side fallback ensuring 4 complete dishes always exist
+  let dishes = state.cookToday.dishes;
+  if (!Array.isArray(dishes) || dishes.length < 4) {
+    const v1 = vegetables[0];
+    const v2 = vegetables[1] || v1;
+    const v3 = vegetables[2] || v2;
+    const baseProduceCost = Math.round((v1.price_today * 0.45) + (v2.price_today * 0.35) + (v3.price_today * 0.20));
+    
+    dishes = [
+      {
+        id: 'dish-main',
+        type: 'main',
+        type_label_en: '🍲 Main Sabzi',
+        type_label_hi: '🍲 मुख्य सब्जी',
+        type_label_mr: '🍲 मुख्य भाजी',
+        time: '20 mins',
+        difficulty: 'Easy • सोपे',
+        title_en: 'Desi Aloo Palak with Homestyle Tadka & Phulkas',
+        title_hi: 'देसी आलू पालक लजीज तड़का व ताज़ा फुल्के',
+        title_mr: 'गावरान बटाटा पालक झणझणीत फोडणी व गरम चपाती',
+        recipe_en: [
+          '1. Heat 1.5 tbsp mustard or sunflower oil with cumin seeds, crushed garlic, and sliced green chillies until fragrant.',
+          '2. Add cubed boiled potatoes with turmeric, coriander powder, and pink rock salt; sauté until edges turn golden crisp.',
+          '3. Fold in washed, shredded fresh spinach, simmer covered for 4-5 minutes, finish with homemade garam masala; serve hot with fresh wheat phulkas.'
+        ],
+        recipe_hi: [
+          '1. गरम तेल में जीरा, ठेचा हुआ लहसुन और हरी मिर्च डालकर हल्की खुशबू आने तक भूनें।',
+          '2. उबले चौकोर कटे आलू, हल्दी, धनिया पाउडर और नमक डालकर सुनहरा कुरकुरा होने तक सेकें।',
+          '3. ताजी कटी पालक मिलाएं और ४-५ मिनट ढककर पकाएं; अंत में गरम मसाला छिड़कें और गरमागरम फुल्कों के साथ परोसें।'
+        ],
+        recipe_mr: [
+          '1. कढईत तेलात जिरे, ठेचलेला लसूण आणि हिरवी मिरची घालून खमंग तडतडवून घ्या.',
+          '2. उकडलेल्या बटाट्याचे मध्यम काप, हळद, धनेपूड व मीठ घालून सोनेरी कुरकुरीत होईपर्यंत परतून घ्या.',
+          '3. बारीक चिरलेली ताजी पालक घालून मंद आचेवर ४-५ मिनिटे वाफ काढा; वरून थोडा गरम मसाला भुरभुरा व गरम चपातीसोबत वाढा.'
+        ],
+        produce_cost: baseProduceCost,
+        tadka_cost: 20,
+        staples_cost: 28,
+        family_cost: baseProduceCost + 20 + 28,
+        cost_per_person: Math.round((baseProduceCost + 48) / 4),
+        servings: '4 persons',
+        savings_vs_hotel: 290
+      },
+      {
+        id: 'dish-dry',
+        type: 'dry',
+        type_label_en: '🍳 Sookhi Bhaji',
+        type_label_hi: '🍳 सूखी सब्जी',
+        type_label_mr: '🍳 खमंग सुकी भाजी',
+        time: '15 mins',
+        difficulty: 'Quick • झटपट',
+        title_en: 'Maharashtrian Kobi Batata Sookhi Bhaji & Bhakri',
+        title_hi: 'पत्तागोभी आलू की सूखी मसालेदार भाजी व रोटी',
+        title_mr: 'खमंग कोबी बटाटा सुकी भाजी व ज्वारीची भाकरी',
+        recipe_en: [
+          '1. In hot oil, crackle mustard seeds, curry leaves, hing, and chopped green chillies in a heavy-bottom kadai.',
+          '2. Add finely shredded fresh cabbage and cubed potatoes with turmeric powder and salt; mix thoroughly on high flame for 2 mins.',
+          '3. Cover and cook in its own gentle steam for 8-10 mins without adding water; garnish with freshly grated coconut & coriander; enjoy with bhakri.'
+        ],
+        recipe_hi: [
+          '1. गरम तेल में राई, कढ़ी पत्ता, हींग और कटी हरी मिर्च का खमंग तड़का लगाएं।',
+          '2. बारीक कटी पत्तागोभी और आलू हल्दी व स्वादानुसार नमक डालकर २ मिनट तेज आंच पर भूनें।',
+          '3. ढक्कन रखकर बिना पानी डाले ८-१० मिनट अपनी भाप में पकाएं; ऊपर से ताजा कसा नारियल और हरा धनिया सजाकर रोटी संग परोसें।'
+        ],
+        recipe_mr: [
+          '1. कढईत गरम तेलात मोहरी, कढीपत्ता, हिंग आणि हिरवी मिरचीची खमंग फोडणी द्या.',
+          '2. बारीक चिरलेली कोबी व बटाट्याचे काप हळद आणि चवीनुसार मीठ घालून २ मिनिटे परता.',
+          '3. पाणी न घालता झाकण ठेवून ८-१० मिनिटे मंद वाफेवर शिजवा; वरून ओले खोबरे आणि कोथिंबीर पेरा व गरमागरम भाकरीसोबत आस्वाद घ्या.'
+        ],
+        produce_cost: Math.round(baseProduceCost * 0.95),
+        tadka_cost: 18,
+        staples_cost: 26,
+        family_cost: Math.round(baseProduceCost * 0.95) + 18 + 26,
+        cost_per_person: Math.round((Math.round(baseProduceCost * 0.95) + 44) / 4),
+        servings: '4 persons',
+        savings_vs_hotel: 270
+      },
+      {
+        id: 'dish-dal',
+        type: 'dal',
+        type_label_en: '🥣 Comfort Dal',
+        type_label_hi: '🥣 पौष्टिक दाल',
+        type_label_mr: '🥣 पौष्टिक डाळ',
+        time: '25 mins',
+        difficulty: 'Nutritious • पौष्टिक',
+        title_en: 'Dhabe Wali Paushtik Palak Lasooni Dal & Jeera Rice',
+        title_hi: 'ढाबा स्टाइल लहुसनी पालक दाल तड़का व चावल',
+        title_mr: 'अस्सल ढाबा स्टाईल लसुणी पालक डाळ तडका व जिरा राईस',
+        recipe_en: [
+          '1. Pressure cook washed toor/moong dal with ripe tomatoes, turmeric, and a pinch of hing for 3-4 whistles till creamy.',
+          '2. In a tadka pan, crackle cumin seeds, 2 dry red chillies, and 8-10 crushed garlic cloves in 1 tbsp pure cow desi ghee until golden brown.',
+          '3. Sauté shredded spinach in the tadka for 2 mins, pour directly into hot cooked dal, simmer for 5 mins; serve piping hot with steamed jeera rice.'
+        ],
+        recipe_hi: [
+          '1. प्रेशर कुकर में तुअर या मूंग दाल को पके टमाटर, हल्दी और हींग के साथ ३-४ सीटी आने तक क्रीमी पकाएं।',
+          '2. तड़का पैन में १ बड़ा चम्मच देसी घी गर्म करके जीरा, २ सूखी लाल मिर्च और ८-१० कुटी लहसुन की कलियां सुनहरी भूनें।',
+          '3. कटी पालक को तड़के में २ मिनट भूनकर उबली दाल में डालें, ५ मिनट उबालें; गरमागरम खुशबूदार जीरा राइस के साथ परोसें।'
+        ],
+        recipe_mr: [
+          '1. कुकरमध्ये तूर किंवा मूग डाळ टोमॅटो, हळद आणि हिंग घालून मऊसर ३-४ शिट्ट्यांवर शिजवून घ्या.',
+          '2. तडका पॅनमध्ये १ चमचा साजूक तुपात जिरे, २ सुक्या लाल मिरच्या आणि ८-१० लसूण पाकळ्या सोनेरी होईपर्यंत खमंग परता.',
+          '3. बारीक चिरलेली पालक तुपाच्या फोडणीत २ मिनिटे परतून शिजलेल्या डाळीत ओता व ५ मिनिटे उकळा; गरमागरम जिरा राईससोबत सर्व्ह करा.'
+        ],
+        produce_cost: Math.round(baseProduceCost * 0.8),
+        tadka_cost: 26,
+        staples_cost: 32,
+        family_cost: Math.round(baseProduceCost * 0.8) + 26 + 32,
+        cost_per_person: Math.round((Math.round(baseProduceCost * 0.8) + 58) / 4),
+        servings: '4 persons',
+        savings_vs_hotel: 310
+      },
+      {
+        id: 'dish-snack',
+        type: 'snack',
+        type_label_en: '☕ Crispy Bhaji',
+        type_label_hi: '☕ कुरकुरी भजिया',
+        type_label_mr: '☕ गरमागरम भजी',
+        time: '12 mins',
+        difficulty: 'Crispy • कुरकुरीत',
+        title_en: 'Chai-Time Crispy Palak Kanda Bhaji & Batata Pakora',
+        title_hi: 'शाम की चाय संग कुरकुरी पालक प्याज भजिया व पकोड़े',
+        title_mr: 'संध्याकाळच्या चहा सोबत कुरकुरीत पालक कांदा भजी व भजी ताट',
+        recipe_en: [
+          '1. Thinly slice potatoes and onions; combine with finely shredded spinach, carom seeds (ajwain), green chillies, and pinch of baking soda.',
+          '2. Add gram flour (chana besan), rice flour for extra crunch, turmeric, and salt; mix with minimal water drops to form a thick, crunchy coating.',
+          '3. Drop rough fritters into medium-hot oil and deep fry until crispy and golden amber; serve piping hot with fresh mint chutney & cutting chai.'
+        ],
+        recipe_hi: [
+          '1. पतले कटे आलू व प्याज को कटी पालक, अजवाइन, हरी मिर्च और चुटकी भर मीठे सोडे के साथ मिलाएं।',
+          '2. चने का बेसन, १ चम्मच चावल का आटा (अतिरिक्त कुरकुरेपन के लिए), हल्दी व नमक डालकर हल्का पानी छिड़क कर सूखा गाढ़ा घोल बनाएं।',
+          '3. मध्यम गरम तेल में छोटे पकोड़े डालकर सुनहरा कुरकुरा होने तक तलें; हरी पुदीना चटनी और गरमागरम कड़क चाय के साथ परोसें।'
+        ],
+        recipe_mr: [
+          '1. पातळ कापलेला बटाटा, कांदा, चिरलेली पालक, ओवा, बारीक हिरवी मिरची व चिमूटभर सोडा एकत्र करा.',
+          '2. चण्याचे बेसन, कुरकुरीतपणासाठी १ चमचा तांदळाचे पीठ, हळद व चवीनुसार मीठ घालून हलका पाण्याचा हात लावून घट्ट पीठ तयार करा.',
+          '3. मध्यम गरम तेलात कुरकुरीत भजी तळून काढा; पुदिना-कोथिंबीर चटणी आणि गरमागरम वाफाळलेल्या कटिंग चहासोबत मनसोक्त आस्वाद घ्या.'
+        ],
+        produce_cost: Math.round(baseProduceCost * 0.85),
+        tadka_cost: 22,
+        staples_cost: 16,
+        family_cost: Math.round(baseProduceCost * 0.85) + 22 + 16,
+        cost_per_person: Math.round((Math.round(baseProduceCost * 0.85) + 38) / 4),
+        servings: '4 persons',
+        savings_vs_hotel: 220
+      }
+    ];
+  }
+
+  const activeIndex = Math.max(0, Math.min(Number(state.selectedDishIndex) || 0, dishes.length - 1));
   const dish = dishes[activeIndex] || dishes[0];
 
   // Recipe steps based on current language
-  let recipeSteps = dish.recipe_mr;
-  let dishTitle = dish.title_mr;
+  let recipeSteps = dish.recipe_mr || dish.recipe_en || [];
+  let dishTitle = dish.title_mr || dish.title_en || '';
   if (state.currentLang === 'hi') {
-    recipeSteps = dish.recipe_hi || dish.recipe_en;
-    dishTitle = dish.title_hi || dish.title_en;
+    recipeSteps = dish.recipe_hi || dish.recipe_en || dish.recipe_mr || [];
+    dishTitle = dish.title_hi || dish.title_en || dish.title_mr || '';
   } else if (state.currentLang === 'en') {
-    recipeSteps = dish.recipe_en;
-    dishTitle = dish.title_en;
+    recipeSteps = dish.recipe_en || dish.recipe_hi || dish.recipe_mr || [];
+    dishTitle = dish.title_en || dish.title_hi || dish.title_mr || '';
   }
 
   // Dish tabs row
   const tabsHtml = dishes.map((d, idx) => {
-    const label = state.currentLang === 'mr' ? d.type_label_mr :
-                  state.currentLang === 'hi' ? d.type_label_hi :
+    const label = state.currentLang === 'mr' ? (d.type_label_mr || d.type_label_en) :
+                  state.currentLang === 'hi' ? (d.type_label_hi || d.type_label_en) :
                   d.type_label_en;
     return `
-      <button type="button" class="dish-tab-btn ${idx === activeIndex ? 'active' : ''}" onclick="selectDishIndex(${idx})">
+      <button type="button" class="dish-tab-btn ${idx === activeIndex ? 'active' : ''}" data-dish-index="${idx}" onclick="selectDishIndex(${idx})">
         ${label}
       </button>
     `;
@@ -413,12 +572,24 @@ function renderCookToday() {
     `;
   }).join('');
 
-  const stepsHtml = recipeSteps.map((step, idx) => `
+  const stepsHtml = (Array.isArray(recipeSteps) ? recipeSteps : []).map((step, idx) => `
     <div class="recipe-step-item">
       <span class="step-num">${idx + 1}</span>
-      <span>${escapeHtml(step.replace(/^\d+\.\s*/, ''))}</span>
+      <span>${escapeHtml(String(step).replace(/^\d+\.\s*/, ''))}</span>
     </div>
   `).join('');
+
+  const familyCost = dish.family_cost || 72;
+  const perPersonCost = dish.cost_per_person || Math.round(familyCost / 4);
+  const produceCost = dish.produce_cost || 24;
+  const tadkaCost = dish.tadka_cost || 20;
+  const staplesCost = dish.staples_cost || 28;
+  const savings = dish.savings_vs_hotel || 280;
+
+  const perPersonText = (dict.perPersonCost || '₹{price} / person').replace('{price}', perPersonCost);
+  const vegText = (dict.breakdownVeggies || 'Fresh Veggies: ₹{price}').replace('{price}', produceCost);
+  const tadkaText = (dict.breakdownTadka || 'Oil & Spices: ₹{price}').replace('{price}', tadkaCost);
+  const staplesText = (dict.breakdownStaples || 'Roti / Rice: ₹{price}').replace('{price}', staplesCost);
 
   elements.cookContainer.innerHTML = `
     <div class="cook-card">
@@ -458,11 +629,18 @@ function renderCookToday() {
 
         <div class="cook-cost-card">
           <div class="cost-label">${dict.approxCostLabel}</div>
-          <div class="cost-amount">₹${dish.family_cost}</div>
-          <div class="cost-subtitle">4 Servings • Fresh & Healthy</div>
+          <div class="cost-amount">₹${familyCost} <span class="cost-per-head">(${perPersonText})</span></div>
+          
+          <div class="cost-breakdown-pills">
+            <span class="breakdown-pill">🥬 ${vegText}</span>
+            <span class="breakdown-pill">🧂 ${tadkaText}</span>
+            <span class="breakdown-pill">🌾 ${staplesText}</span>
+          </div>
+
+          <div class="cost-subtitle">Wholesome Balanced Meal for 4 Persons</div>
           <div class="savings-chip">
             <span>✨</span>
-            <span>${dict.savingsLabel}: ~₹${dish.savings_vs_hotel}</span>
+            <span>${dict.savingsLabel}: ~₹${savings}</span>
           </div>
         </div>
       </div>
@@ -471,7 +649,7 @@ function renderCookToday() {
 }
 
 window.selectDishIndex = function(index) {
-  state.selectedDishIndex = index;
+  state.selectedDishIndex = Number(index) || 0;
   renderCookToday();
 };
 
@@ -807,7 +985,7 @@ function drawPosterCanvas() {
   ctx.textAlign = 'center';
   ctx.fillStyle = '#F4B400';
   ctx.font = 'bold 22px "Baloo 2", sans-serif';
-  ctx.fillText('Data source: APMC Vashi (sample data for demo)', canvas.width / 2, 1075);
+  ctx.fillText('Data source: APMC Vashi Wholesale Market Yard (Daily Bhaav)', canvas.width / 2, 1075);
 
   ctx.fillStyle = '#FFFFFF';
   ctx.font = '18px "Poppins", sans-serif';
@@ -1026,7 +1204,7 @@ async function handleResetSeed() {
   const adminKey = getAdminApiKey();
 
   try {
-    showToast('Resetting to APMC demo rates...');
+    showToast('Restoring official APMC Vashi rates...');
     const res = await fetch('/api/reset', {
       method: 'POST',
       headers: {

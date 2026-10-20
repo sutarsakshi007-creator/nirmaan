@@ -19,10 +19,12 @@ function generateDishSuggestions(veggies) {
   const v2 = veggies[1] || v1;
   const v3 = veggies[2] || v2;
 
-  const produceCost = Math.round(
-    (v1.price_today * 0.4) +
-    (v2.price_today * 0.3) +
-    (v3.price_today * 0.3)
+  // Realistic meal economics for a family of 4 (4 full servings):
+  // 1. Fresh APMC wholesale produce (~1 kg total fresh vegetables)
+  const baseProduceCost = Math.round(
+    (v1.price_today * 0.45) +
+    (v2.price_today * 0.35) +
+    (v3.price_today * 0.20)
   );
 
   const dishes = [
@@ -35,27 +37,31 @@ function generateDishSuggestions(veggies) {
       type_label_mr: '🍲 मुख्य भाजी',
       time: '20 mins',
       difficulty: 'Easy • सोपे',
-      title_en: 'Desi Aloo Palak with Homestyle Tadka',
-      title_hi: 'देसी आलू पालक लजीज तड़का',
-      title_mr: 'गावरान बटाटा पालक झणझणीत फोडणी',
+      title_en: 'Desi Aloo Palak with Homestyle Tadka & Phulkas',
+      title_hi: 'देसी आलू पालक लजीज तड़का व ताज़ा फुल्के',
+      title_mr: 'गावरान बटाटा पालक झणझणीत फोडणी व गरम चपाती',
       recipe_en: [
-        '1. Heat 1.5 tbsp oil with cumin, chopped garlic, and green chillies until aromatic.',
-        '2. Add cubed boiled potatoes with turmeric and salt; sauté until golden crisp.',
-        '3. Fold in roughly chopped fresh spinach and simmer for 5 minutes; finish with a dash of garam masala.'
+        '1. Heat 1.5 tbsp mustard or sunflower oil with cumin seeds, crushed garlic, and sliced green chillies until fragrant.',
+        '2. Add cubed boiled potatoes with turmeric, coriander powder, and pink rock salt; sauté until edges turn golden crisp.',
+        '3. Fold in washed, shredded fresh spinach, simmer covered for 4-5 minutes, finish with homemade garam masala; serve hot with fresh wheat phulkas.'
       ],
       recipe_hi: [
-        '1. तेल में जीरा, लहसुन और हरी मिर्च डालकर खुशबू आने तक भूनें।',
-        '2. उबले कटे आलू, हल्दी और नमक डालकर सुनहरा कुरकुरा होने तक सेकें।',
-        '3. ताजी कटी पालक मिलाएं और ५ मिनट ढककर पकाएं; अंत में चुटकी भर गरम मसाला छिड़कें।'
+        '1. गरम तेल में जीरा, ठेचा हुआ लहसुन और हरी मिर्च डालकर हल्की खुशबू आने तक भूनें।',
+        '2. उबले चौकोर कटे आलू, हल्दी, धनिया पाउडर और नमक डालकर सुनहरा कुरकुरा होने तक सेकें।',
+        '3. ताजी कटी पालक मिलाएं और ४-५ मिनट ढककर पकाएं; अंत में गरम मसाला छिड़कें और गरमागरम फुल्कों के साथ परोसें।'
       ],
       recipe_mr: [
-        '1. तेलात जिरे, ठेचलेला लसूण आणि हिरवी मिरची घालून खमंग परतून घ्या.',
-        '2. उकडलेल्या बटाट्याचे तुकडे, हळद व मीठ घालून सोनेरी कुरकुरीत होईपर्यंत परता.',
-        '3. बारीक चिरलेली ताजी पालक घालून ५ मिनिटे वाफ काढा; शेवटी थोडा गरम मसाला भुरभुरा.'
+        '1. कढईत तेलात जिरे, ठेचलेला लसूण आणि हिरवी मिरची घालून खमंग तडतडवून घ्या.',
+        '2. उकडलेल्या बटाट्याचे मध्यम काप, हळद, धनेपूड व मीठ घालून सोनेरी कुरकुरीत होईपर्यंत परतून घ्या.',
+        '3. बारीक चिरलेली ताजी पालक घालून मंद आचेवर ४-५ मिनिटे वाफ काढा; वरून थोडा गरम मसाला भुरभुरा व गरम चपातीसोबत वाढा.'
       ],
-      family_cost: produceCost + 15,
+      produce_cost: baseProduceCost,
+      tadka_cost: 20, // Cooking oil, cumin, garlic, green chillies, turmeric, salt
+      staples_cost: 28, // 400g whole wheat atta for 10-12 hot phulkas
+      family_cost: baseProduceCost + 20 + 28, // Complete balanced meal for 4
+      cost_per_person: Math.round((baseProduceCost + 48) / 4),
       servings: '4 persons',
-      savings_vs_hotel: Math.max(160, Math.round((produceCost + 15) * 3.8))
+      savings_vs_hotel: 290 // Restaurant delivery bill is ₹360+ vs ~₹72 at home
     },
 
     // 2. Sookhi Bhaji / Dry Stir Fry
@@ -67,27 +73,31 @@ function generateDishSuggestions(veggies) {
       type_label_mr: '🍳 खमंग सुकी भाजी',
       time: '15 mins',
       difficulty: 'Quick • झटपट',
-      title_en: 'Maharashtrian Kobi Batata Sookhi Bhaji',
-      title_hi: 'पत्तागोभी आलू की सूखी मसालेदार सब्जी',
-      title_mr: 'खमंग कोबी बटाटा सुकी भाजी',
+      title_en: 'Maharashtrian Kobi Batata Sookhi Bhaji & Bhakri',
+      title_hi: 'पत्तागोभी आलू की सूखी मसालेदार भाजी व रोटी',
+      title_mr: 'खमंग कोबी बटाटा सुकी भाजी व ज्वारीची भाकरी',
       recipe_en: [
-        '1. Splutter mustard seeds, curry leaves, and green chillies in hot oil in a heavy kadai.',
-        '2. Add finely diced potatoes and sliced cabbage with turmeric, cumin, and salt.',
-        '3. Cover and cook in its own steam for 10 minutes; garnish with freshly grated coconut and coriander.'
+        '1. In hot oil, crackle mustard seeds, curry leaves, hing, and chopped green chillies in a heavy-bottom kadai.',
+        '2. Add finely shredded fresh cabbage and cubed potatoes with turmeric powder and salt; mix thoroughly on high flame for 2 mins.',
+        '3. Cover and cook in its own gentle steam for 8-10 mins without adding water; garnish with freshly grated coconut & coriander; enjoy with bhakri.'
       ],
       recipe_hi: [
-        '1. गरम तेल में राई, कढ़ी पत्ता और हरी मिर्च का तड़का लगाएं।',
-        '2. बारीक कटे आलू और पत्तागोभी को हल्दी व स्वादानुसार नमक के साथ मिलाएं।',
-        '3. ढक्कन रखकर १० मिनट भाप में पकाएं; ऊपर से ताजा कसा नारियल और हरा धनिया सजाएं।'
+        '1. गरम तेल में राई, कढ़ी पत्ता, हींग और कटी हरी मिर्च का खमंग तड़का लगाएं।',
+        '2. बारीक कटी पत्तागोभी और आलू हल्दी व स्वादानुसार नमक डालकर २ मिनट तेज आंच पर भूनें।',
+        '3. ढक्कन रखकर बिना पानी डाले ८-१० मिनट अपनी भाप में पकाएं; ऊपर से ताजा कसा नारियल और हरा धनिया सजाकर रोटी संग परोसें।'
       ],
       recipe_mr: [
-        '1. गरम तेलात मोहरी, कढीपत्ता आणि हिरवी मिरची तडतडवून घ्या.',
-        '2. बारीक चिरलेला बटाटा व कोबी हळद आणि चवीनुसार मीठ घालून व्यवस्थित परता.',
-        '3. झाकण ठेवून १० मिनिटे वाफेवर शिजवा; वरून ओले खोबरे आणि कोथिंबीर पेरा.'
+        '1. कढईत गरम तेलात मोहरी, कढीपत्ता, हिंग आणि हिरवी मिरचीची खमंग फोडणी द्या.',
+        '2. बारीक चिरलेली कोबी व बटाट्याचे काप हळद आणि चवीनुसार मीठ घालून २ मिनिटे परता.',
+        '3. पाणी न घालता झाकण ठेवून ८-१० मिनिटे मंद वाफेवर शिजवा; वरून ओले खोबरे आणि कोथिंबीर पेरा व गरमागरम भाकरीसोबत आस्वाद घ्या.'
       ],
-      family_cost: Math.round(produceCost * 0.9) + 12,
+      produce_cost: Math.round(baseProduceCost * 0.95),
+      tadka_cost: 18, // Oil, mustard, curry leaves, hing, green chillies, coconut
+      staples_cost: 26, // Atta / Jowar flour for 4 persons
+      family_cost: Math.round(baseProduceCost * 0.95) + 18 + 26,
+      cost_per_person: Math.round((Math.round(baseProduceCost * 0.95) + 44) / 4),
       servings: '4 persons',
-      savings_vs_hotel: 145
+      savings_vs_hotel: 270
     },
 
     // 3. Comfort Protein Dal / Soup
@@ -99,27 +109,31 @@ function generateDishSuggestions(veggies) {
       type_label_mr: '🥣 पौष्टिक डाळ',
       time: '25 mins',
       difficulty: 'Nutritious • पौष्टिक',
-      title_en: 'Dhabe Wali Paushtik Palak Lasooni Dal',
-      title_hi: 'ढाबा स्टाइल लहसुनी पालक दाल',
-      title_mr: 'अस्सल ढाबा स्टाईल लसुणी पालक डाळ',
+      title_en: 'Dhabe Wali Paushtik Palak Lasooni Dal & Jeera Rice',
+      title_hi: 'ढाबा स्टाइल लहुसनी पालक दाल तड़का व चावल',
+      title_mr: 'अस्सल ढाबा स्टाईल लसुणी पालक डाळ तडका व जिरा राईस',
       recipe_en: [
-        '1. Pressure cook toor or moong dal with chopped tomatoes, turmeric, and pinch of hing until soft.',
-        '2. In a pan, crackle cumin seeds, dry red chillies, and 8-10 sliced garlic cloves in 1 tbsp desi ghee.',
-        '3. Add shredded spinach, pour over cooked dal, simmer 6 mins; serve hot with rice or bhakri.'
+        '1. Pressure cook washed toor/moong dal with ripe tomatoes, turmeric, and a pinch of hing for 3-4 whistles till creamy.',
+        '2. In a tadka pan, crackle cumin seeds, 2 dry red chillies, and 8-10 crushed garlic cloves in 1 tbsp pure cow desi ghee until golden brown.',
+        '3. Sauté shredded spinach in the tadka for 2 mins, pour directly into hot cooked dal, simmer for 5 mins; serve piping hot with steamed jeera rice.'
       ],
       recipe_hi: [
-        '1. कुकर में तुअर या मूंग दाल को टमाटर, हल्दी और हींग के साथ नरम होने तक पकाएं।',
-        '2. पैन में १ चम्मच देसी घी में जीरा, सूखी लाल मिर्च और ८-१० लहसुन की कलियां भूनें।',
-        '3. कटी पालक डालकर भूनें, उबली दाल मिलाकर ६ मिनट पकाएं; गरमागरम भात या रोटी संग परोसें।',
+        '1. प्रेशर कुकर में तुअर या मूंग दाल को पके टमाटर, हल्दी और हींग के साथ ३-४ सीटी आने तक क्रीमी पकाएं।',
+        '2. तड़का पैन में १ बड़ा चम्मच देसी घी गर्म करके जीरा, २ सूखी लाल मिर्च और ८-१० कुटी लहसुन की कलियां सुनहरी भूनें।',
+        '3. कटी पालक को तड़के में २ मिनट भूनकर उबली दाल में डालें, ५ मिनट उबालें; गरमागरम खुशबूदार जीरा राइस के साथ परोसें।'
       ],
       recipe_mr: [
-        '1. कुकरमध्ये तूर किंवा मूग डाळ टोमॅटो, हळद आणि हिंग घालून मऊ शिजवून घ्या.',
-        '2. पॅनमध्ये १ चमचा साजूक तुपात जिरे, सुकी लाल मिरची आणि ८-१० लसूण पाकळ्यांची खमंग फोडणी द्या.',
-        '3. बारीक चिरलेली पालक परतून त्यात शिजलेली डाळ घाला व ६ मिनिटे उकळा; भात किंवा भाकरीसोबत सर्व्ह करा.'
+        '1. कुकरमध्ये तूर किंवा मूग डाळ टोमॅटो, हळद आणि हिंग घालून मऊसर ३-४ शिट्ट्यांवर शिजवून घ्या.',
+        '2. तडका पॅनमध्ये १ चमचा साजूक तुपात जिरे, २ सुक्या लाल मिरच्या आणि ८-१० लसूण पाकळ्या सोनेरी होईपर्यंत खमंग परता.',
+        '3. बारीक चिरलेली पालक तुपाच्या फोडणीत २ मिनिटे परतून शिजलेल्या डाळीत ओता व ५ मिनिटे उकळा; गरमागरम जिरा राईससोबत सर्व्ह करा.'
       ],
-      family_cost: Math.round(produceCost * 1.1) + 18,
+      produce_cost: Math.round(baseProduceCost * 0.8),
+      tadka_cost: 26, // Desi ghee, 10 garlic cloves, dry chillies, cumin, hing
+      staples_cost: 32, // 200g high-protein toor/moong dal + basmati rice for 4
+      family_cost: Math.round(baseProduceCost * 0.8) + 26 + 32,
+      cost_per_person: Math.round((Math.round(baseProduceCost * 0.8) + 58) / 4),
       servings: '4 persons',
-      savings_vs_hotel: 175
+      savings_vs_hotel: 310
     },
 
     // 4. Tea-Time Crispy Bhaji / Snacks
@@ -132,26 +146,30 @@ function generateDishSuggestions(veggies) {
       time: '12 mins',
       difficulty: 'Crispy • कुरकुरीत',
       title_en: 'Chai-Time Crispy Palak Kanda Bhaji & Batata Pakora',
-      title_hi: 'चाय-टाइम कुरकुरी पालक प्याज भजिया',
-      title_mr: 'चहा सोबत कुरकुरीत पालक कांदा भजी',
+      title_hi: 'शाम की चाय संग कुरकुरी पालक प्याज भजिया व पकोड़े',
+      title_mr: 'संध्याकाळच्या चहा सोबत कुरकुरीत पालक कांदा भजी व भजी ताट',
       recipe_en: [
-        '1. Mix finely sliced potatoes, onions, and shredded spinach in a bowl with besan, ajwain, and red chilli.',
-        '2. Sprinkle minimal water and mix firmly to create a rough, crunchy coating.',
-        '3. Drop rough fritters into medium-hot oil and deep-fry till golden brown; serve with mint chutney & chai.'
+        '1. Thinly slice potatoes and onions; combine with finely shredded spinach, carom seeds (ajwain), green chillies, and pinch of baking soda.',
+        '2. Add gram flour (chana besan), rice flour for extra crunch, turmeric, and salt; mix with minimal water drops to form a thick, crunchy coating.',
+        '3. Drop rough fritters into medium-hot oil and deep fry until crispy and golden amber; serve piping hot with fresh mint chutney & cutting chai.'
       ],
       recipe_hi: [
-        '1. बाउल में पतले कटे आलू, प्याज और कटी पालक को बेसन, अजवाइन और लाल मिर्च पाउडर के साथ मिलाएं।',
-        '2. बहुत थोड़ा पानी छिड़क कर कुरकुरा सूखा मिश्रण तैयार करें।',
-        '3. मध्यम गरम तेल में छोटे पकोड़े डालकर सुनहरा कुरकुरा होने तक तलें; हरी चटनी व चाय के साथ परोसें।'
+        '1. पतले कटे आलू व प्याज को कटी पालक, अजवाइन, हरी मिर्च और चुटकी भर मीठे सोडे के साथ मिलाएं।',
+        '2. चने का बेसन, १ चम्मच चावल का आटा (अतिरिक्त कुरकुरेपन के लिए), हल्दी व नमक डालकर हल्का पानी छिड़क कर सूखा गाढ़ा घोल बनाएं।',
+        '3. मध्यम गरम तेल में छोटे पकोड़े डालकर सुनहरा कुरकुरा होने तक तलें; हरी पुदीना चटनी और गरमागरम कड़क चाय के साथ परोसें।'
       ],
       recipe_mr: [
-        '1. बाऊलमध्ये पातळ बटाटा काप, कांदा आणि चिरलेली पालक बेसन, ओवा व तिखट-मीठ घालून एकत्र करा.',
-        '2. किंचित पाणी शिंपडून छान कुरकुरीत सुके पीठ तयार करा.',
-        '3. मध्यम तेलात कुरकुरीत भजी तळून काढा; पुदिना चटणी आणि गरमागरम वाफाळलेल्या चहाचा आस्वाद घ्या.'
+        '1. पातळ कापलेला बटाटा, कांदा, चिरलेली पालक, ओवा, बारीक हिरवी मिरची व चिमूटभर सोडा एकत्र करा.',
+        '2. चण्याचे बेसन, कुरकुरीतपणासाठी १ चमचा तांदळाचे पीठ, हळद व चवीनुसार मीठ घालून हलका पाण्याचा हात लावून घट्ट पीठ तयार करा.',
+        '3. मध्यम गरम तेलात कुरकुरीत भजी तळून काढा; पुदिना-कोथिंबीर चटणी आणि गरमागरम वाफाळलेल्या कटिंग चहासोबत मनसोक्त आस्वाद घ्या.'
       ],
-      family_cost: Math.round(produceCost * 0.8) + 14,
+      produce_cost: Math.round(baseProduceCost * 0.85),
+      tadka_cost: 22, // Frying oil, ajwain, green chillies, mint chutney ingredients
+      staples_cost: 16, // Chana besan & rice flour
+      family_cost: Math.round(baseProduceCost * 0.85) + 22 + 16,
+      cost_per_person: Math.round((Math.round(baseProduceCost * 0.85) + 38) / 4),
       servings: '4 persons',
-      savings_vs_hotel: 130
+      savings_vs_hotel: 220
     }
   ];
 

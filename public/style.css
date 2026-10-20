@@ -740,6 +740,35 @@ body {
   margin: 4px 0;
 }
 
+.cost-per-head {
+  font-family: var(--font-heading);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--color-dark-muted);
+  display: block;
+  margin-top: 2px;
+}
+
+.cost-breakdown-pills {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  margin: 10px 0 8px 0;
+}
+
+.breakdown-pill {
+  background: var(--color-white);
+  border: 1.5px solid var(--color-dark);
+  border-radius: var(--radius-pill);
+  padding: 3px 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--color-dark);
+  box-shadow: 1px 1px 0 var(--color-dark);
+  white-space: nowrap;
+}
+
 .cost-subtitle {
   font-size: 0.78rem;
   font-weight: 600;
