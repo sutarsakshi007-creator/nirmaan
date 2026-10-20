@@ -32,6 +32,11 @@ const rateSchema = new mongoose.Schema(
       required: [true, 'Emoji icon is required'],
       trim: true
     },
+    image_url: {
+      type: String,
+      default: '',
+      trim: true
+    },
     price_today: {
       type: Number,
       required: [true, 'Today price is required'],

@@ -264,6 +264,7 @@ router.post('/rates', async (req, res) => {
       name_mr: name_mr.trim(),
       category: category.toLowerCase().trim(),
       emoji: emoji.trim(),
+      image_url: req.body.image_url ? req.body.image_url.trim() : `/images/${name_en.toLowerCase().replace(/\s+/g, '_')}.jpg`,
       price_today: Number(price_today),
       price_yesterday: price_yesterday !== undefined ? Number(price_yesterday) : Number(price_today),
       price_week_low: price_week_low !== undefined ? Number(price_week_low) : Number(price_today),

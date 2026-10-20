@@ -328,10 +328,17 @@ function renderSeasonStrip() {
 
   elements.seasonScroll.innerHTML = state.seasonalItems.map(item => {
     const primaryName = getLocalizedName(item);
+    const photoHtml = item.image_url ? `
+      <div class="season-photo-wrap">
+        <img src="${item.image_url}" alt="${escapeHtml(primaryName)}" class="season-real-photo" loading="lazy" onerror="this.parentElement.style.display='none'; this.parentElement.nextElementSibling.style.display='block';">
+      </div>
+      <div class="card-emoji" style="display: none;">${item.emoji}</div>
+    ` : `<div class="card-emoji">${item.emoji}</div>`;
+
     return `
       <div class="season-card" onclick="filterByItemName('${escapeHtml(item.name_en)}')">
         <span class="season-ribbon">${dict.seasonBadge}</span>
-        <div class="card-emoji">${item.emoji}</div>
+        ${photoHtml}
         <div class="card-name">${escapeHtml(primaryName)}</div>
         <div class="card-subname">${escapeHtml(item.category)}</div>
         <div class="card-price">₹${item.price_today}${dict.unitKg}</div>
@@ -370,13 +377,22 @@ function renderCookToday() {
     dishTitle = dish.title_en;
   }
 
-  const veggiesHtml = vegetables.map(v => `
-    <div class="veg-hero-pill">
-      <span class="v-emoji">${v.emoji}</span>
-      <div class="v-name">${escapeHtml(getLocalizedName(v))}</div>
-      <div class="v-price">₹${v.price_today}${dict.unitKg}</div>
-    </div>
-  `).join('');
+  const veggiesHtml = vegetables.map(v => {
+    const photoHtml = v.image_url ? `
+      <div class="veg-photo-wrap">
+        <img src="${v.image_url}" alt="${escapeHtml(getLocalizedName(v))}" class="veg-real-photo" loading="lazy" onerror="this.parentElement.style.display='none'; this.parentElement.nextElementSibling.style.display='block';">
+      </div>
+      <span class="v-emoji" style="display: none;">${v.emoji}</span>
+    ` : `<span class="v-emoji">${v.emoji}</span>`;
+
+    return `
+      <div class="veg-hero-pill">
+        ${photoHtml}
+        <div class="v-name">${escapeHtml(getLocalizedName(v))}</div>
+        <div class="v-price">₹${v.price_today}${dict.unitKg}</div>
+      </div>
+    `;
+  }).join('');
 
   const stepsHtml = recipeSteps.map((step, idx) => `
     <div class="recipe-step-item">
@@ -485,8 +501,13 @@ function renderRatesGrid() {
           </div>
 
           <div class="card-item-header">
-            <div class="item-emoji-wrap">
-              ${item.emoji}
+            <div class="item-photo-wrap">
+              <img src="${item.image_url || '/images/' + item.name_en.toLowerCase().replace(/\s+/g, '_') + '.jpg'}" 
+                   alt="${escapeHtml(primaryName)}" 
+                   class="item-real-photo" 
+                   loading="lazy" 
+                   onerror="this.style.display='none';">
+              <span class="item-mini-emoji" title="${escapeHtml(item.category)}">${item.emoji}</span>
             </div>
             <div class="item-names-wrap">
               <div class="item-primary-name" title="${escapeHtml(primaryName)}">${escapeHtml(primaryName)}</div>
@@ -538,9 +559,25 @@ window.clearFilters = function() {
 // ==========================================================================
 // SHARE POSTER CANVAS GENERATOR (WhatsApp Friendly HTML5 Canvas)
 // ==========================================================================
+const posterImageCache = {};
+
 function openPosterModal() {
   elements.posterModal.classList.add('open');
   drawPosterCanvas();
+
+  // Preload top 5 images and redraw once loaded
+  const top5 = state.rates.slice(0, 5);
+  top5.forEach(item => {
+    const src = item.image_url || `/images/${item.name_en.toLowerCase().replace(/\s+/g, '_')}.jpg`;
+    if (!posterImageCache[src]) {
+      const img = new Image();
+      img.src = src;
+      img.onload = () => {
+        posterImageCache[src] = img;
+        drawPosterCanvas();
+      };
+    }
+  });
 }
 
 function drawPosterCanvas() {
@@ -630,20 +667,37 @@ function drawPosterCanvas() {
       ctx.fillRect(52, itemY - 26, canvas.width - 104, 76);
     }
 
-    // Emoji
-    ctx.font = '40px sans-serif';
-    ctx.textAlign = 'left';
-    ctx.fillText(item.emoji, 70, itemY + 16);
+    // Real Photo Thumbnail in Canvas
+    const imgSrc = item.image_url || `/images/${item.name_en.toLowerCase().replace(/\s+/g, '_')}.jpg`;
+    const cachedImg = posterImageCache[imgSrc];
+
+    if (cachedImg && cachedImg.complete && cachedImg.naturalWidth > 0) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.roundRect(68, itemY - 22, 54, 54, 10);
+      ctx.clip();
+      ctx.drawImage(cachedImg, 68, itemY - 22, 54, 54);
+      ctx.restore();
+      ctx.strokeStyle = '#2A2118';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    } else {
+      // Emoji
+      ctx.font = '38px sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText(item.emoji, 70, itemY + 16);
+    }
 
     // Names
     ctx.fillStyle = '#2A2118';
     ctx.font = 'bold 24px "Poppins", sans-serif';
+    ctx.textAlign = 'left';
     const primaryName = getLocalizedName(item);
-    ctx.fillText(`${index + 1}. ${primaryName}`, 130, itemY + 8);
+    ctx.fillText(`${index + 1}. ${primaryName}`, 136, itemY + 8);
 
     ctx.font = '16px "Poppins", sans-serif';
     ctx.fillStyle = '#777777';
-    ctx.fillText(item.name_en, 130, itemY + 30);
+    ctx.fillText(`${item.name_en} (${item.emoji})`, 136, itemY + 30);
 
     // Price
     ctx.textAlign = 'right';
@@ -679,6 +733,7 @@ function drawPosterCanvas() {
       ctx.stroke();
     }
   });
+
 
   // 6. Cook This Today Banner in Poster
   if (state.cookToday && state.cookToday.dish) {
@@ -810,7 +865,11 @@ function setAdminMode(mode) {
 function renderAdminSelectList() {
   elements.adminEditList.innerHTML = state.rates.map(item => `
     <div class="admin-item-row ${state.editingRateId === item._id ? 'selected' : ''}" onclick="selectItemForEdit('${item._id}')">
-      <div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <img src="${item.image_url || '/images/' + item.name_en.toLowerCase().replace(/\s+/g, '_') + '.jpg'}" 
+             alt="${escapeHtml(item.name_en)}" 
+             style="width: 32px; height: 32px; border-radius: 6px; object-fit: cover; border: 1.5px solid var(--color-dark);"
+             onerror="this.style.display='none';">
         <span>${item.emoji}</span>
         <b>${escapeHtml(item.name_en)}</b> (${escapeHtml(item.name_mr || '')})
       </div>
@@ -834,6 +893,9 @@ window.selectItemForEdit = function(rateId) {
   document.getElementById('formNameMr').value = item.name_mr;
   document.getElementById('formCategory').value = item.category;
   document.getElementById('formEmoji').value = item.emoji;
+  if (document.getElementById('formImageUrl')) {
+    document.getElementById('formImageUrl').value = item.image_url || '';
+  }
   document.getElementById('formPriceToday').value = item.price_today;
   document.getElementById('formPriceYesterday').value = item.price_yesterday;
   document.getElementById('formPriceWeekLow').value = item.price_week_low;
@@ -843,12 +905,14 @@ async function handleAdminFormSubmit(e) {
   e.preventDefault();
 
   const id = document.getElementById('formRateId').value;
+  const imgUrlVal = document.getElementById('formImageUrl') ? document.getElementById('formImageUrl').value.trim() : '';
   const payload = {
     name_en: document.getElementById('formNameEn').value.trim(),
     name_hi: document.getElementById('formNameHi').value.trim(),
     name_mr: document.getElementById('formNameMr').value.trim(),
     category: document.getElementById('formCategory').value,
     emoji: document.getElementById('formEmoji').value.trim() || '🥬',
+    image_url: imgUrlVal || `/images/${document.getElementById('formNameEn').value.trim().toLowerCase().replace(/\s+/g, '_')}.jpg`,
     price_today: Number(document.getElementById('formPriceToday').value),
     price_yesterday: Number(document.getElementById('formPriceYesterday').value),
     price_week_low: Number(document.getElementById('formPriceWeekLow').value),
