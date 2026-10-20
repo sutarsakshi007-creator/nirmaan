@@ -864,8 +864,24 @@ function openWhatsAppTextFallback(text) {
 // ==========================================================================
 // ADMIN MODAL & CRUD HANDLERS
 // ==========================================================================
+function getAdminApiKey() {
+  const inputEl = document.getElementById('adminApiKeyInput');
+  const stored = localStorage.getItem('mandi_admin_key');
+  if (inputEl && inputEl.value.trim()) {
+    const key = inputEl.value.trim();
+    localStorage.setItem('mandi_admin_key', key);
+    return key;
+  }
+  return stored || 'apmc-vashi-secret-2026';
+}
+
 function openAdminModal(rateId = null) {
   elements.adminModal.classList.add('open');
+  const keyInput = document.getElementById('adminApiKeyInput');
+  if (keyInput) {
+    keyInput.value = localStorage.getItem('mandi_admin_key') || 'apmc-vashi-secret-2026';
+    keyInput.oninput = (e) => localStorage.setItem('mandi_admin_key', e.target.value.trim());
+  }
   if (rateId) {
     openAdminForEdit(rateId);
   } else {
@@ -954,22 +970,39 @@ async function handleAdminFormSubmit(e) {
     unit: 'kg'
   };
 
+  const adminKey = getAdminApiKey();
+
   try {
     let res;
     if (id) {
       // PUT /api/rates/:id
       res = await fetch(`/api/rates/${id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': adminKey
+        },
         body: JSON.stringify(payload)
       });
     } else {
       // POST /api/rates
       res = await fetch('/api/rates', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': adminKey
+        },
         body: JSON.stringify(payload)
       });
+    }
+
+    if (res.status === 401) {
+      showToast('🔐 Unauthorized: Invalid Admin Security Passkey.');
+      return;
+    }
+    if (res.status === 429) {
+      showToast('⏱️ Rate limit exceeded: Too many modifications. Please wait 15 minutes.');
+      return;
     }
 
     const data = await res.json();
@@ -990,9 +1023,27 @@ async function handleResetSeed() {
   const dict = translations[state.currentLang] || translations.en;
   if (!confirm(dict.resetSeedConfirm)) return;
 
+  const adminKey = getAdminApiKey();
+
   try {
     showToast('Resetting to APMC demo rates...');
-    const res = await fetch('/api/reset', { method: 'POST' });
+    const res = await fetch('/api/reset', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': adminKey
+      }
+    });
+
+    if (res.status === 401) {
+      showToast('🔐 Unauthorized: Invalid Admin Security Passkey.');
+      return;
+    }
+    if (res.status === 429) {
+      showToast('⏱️ Rate limit exceeded: Please wait before resetting again.');
+      return;
+    }
+
     const data = await res.json();
     if (data.success) {
       showToast(data.message || 'Rates reset successfully!');

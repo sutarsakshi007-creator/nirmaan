@@ -209,7 +209,7 @@ Create a new rate item.
 }
 ```
 
-### 5. `PUT /api/rates/:id`
+### 5. `PUT /api/rates/:id` *(Protected by Admin Passkey)*
 Update prices for an existing item.
 ```json
 {
@@ -218,11 +218,42 @@ Update prices for an existing item.
 }
 ```
 
-### 6. `DELETE /api/rates/:id`
+### 6. `DELETE /api/rates/:id` *(Protected by Admin Passkey)*
 Delete an item from the market list.
 
-### 7. `POST /api/reset`
+### 7. `POST /api/reset` *(Protected by Admin Passkey)*
 Reset database back to the canonical 20 APMC items.
+
+---
+
+## 🛡️ Security Features & Architecture
+
+Mandi Mood is built with multi-layered production-grade web security:
+
+1. **HTTP Security Headers (`helmet`)**:
+   - Strict **Content Security Policy (CSP)** restricting origins while allowing verified Google Fonts (`fonts.googleapis.com`, `fonts.gstatic.com`) and canvas blob downloads.
+   - `X-Content-Type-Options: nosniff` to prevent MIME-sniffing attacks.
+   - `X-Frame-Options: SAMEORIGIN` preventing Clickjacking attacks.
+   - Hides Express fingerprint (`X-Powered-By: Express` stripped).
+   - `Strict-Transport-Security` (HSTS) ready.
+
+2. **DDoS & Brute Force Rate Limiting (`express-rate-limit`)**:
+   - **General API Limiter**: Max 200 requests per 15 minutes per IP address with standard `RateLimit-*` headers.
+   - **Strict Mutation Limiter**: Sensitive write operations (`POST`, `PUT`, `DELETE`, `/reset`) are throttled to 30 requests per 15 minutes per IP to prevent spamming and automated price manipulation.
+
+3. **Admin Passkey Authentication (`authMiddleware`)**:
+   - Write endpoints (`POST /api/rates`, `PUT /api/rates/:id`, `DELETE /api/rates/:id`, `POST /api/reset`) require authentication.
+   - Validates the `x-api-key` header against `ADMIN_API_KEY` in `.env`.
+   - The web UI includes an **Admin Security Passkey** field with local persistence in the browser.
+
+4. **Input Validation & Sanitization**:
+   - **ReDoS Shield**: Search query regexes are safely escaped to prevent Regular Expression Denial of Service attacks.
+   - **MongoDB ObjectId Validation**: Route parameters validate 24-character hexadecimal ObjectIds before querying, preventing Mongoose CastError exceptions.
+   - **Type & Range Whitelisting**: Strict whitelists for produce categories (`vegetable`, `fruit`, `spice`), sort options, numeric bounds (prices 0 to 100,000), and image URL schemes (`/images/`, `http://`, `https://`).
+   - **Payload Size Capping**: `express.json({ limit: '100kb' })` blocks memory exhaustion attacks.
+
+5. **Safe Error Handling**:
+   - In production (`NODE_ENV=production`), internal database connection details and stack traces are withheld from API responses.
 
 ---
 
@@ -230,16 +261,18 @@ Reset database back to the canonical 20 APMC items.
 
 ### Option 1: Using the Web UI (Admin Modal)
 1. Click the **"Update / Add Rate"** button in the header.
-2. Select **"Update Existing Rates"** tab.
-3. Click on the vegetable or fruit you wish to edit (or click the ✏️ icon on any card).
-4. Update `Today's Price` and `Yesterday's Price`.
-5. Click **"Save Rate"** — the rate card, price trends, and "Cook This Today" automatically update!
+2. Enter your **Admin Security Passkey** (default: `apmc-vashi-secret-2026`).
+3. Select **"Update Existing Rates"** tab.
+4. Click on the vegetable or fruit you wish to edit (or click the ✏️ icon on any card).
+5. Update `Today's Price` and `Yesterday's Price`.
+6. Click **"Save Rate"** — the rate card, price trends, and "Cook This Today" automatically update!
 
 ### Option 2: Using cURL / Terminal
 ```bash
-# Update Tomato price (replace with actual MongoDB _id)
+# Update Tomato price (replace with actual MongoDB _id and admin key)
 curl -X PUT http://localhost:3000/api/rates/6ad6ffaab90b0d1d236175d2 \
   -H "Content-Type: application/json" \
+  -H "x-api-key: apmc-vashi-secret-2026" \
   -d '{"price_today": 20, "price_yesterday": 22}'
 ```
 

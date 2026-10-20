@@ -2,6 +2,12 @@ const express = require('express');
 const router = express.Router();
 const Rate = require('../models/Rate');
 const sampleRates = require('../sampleRates');
+const { requireAdminAuth } = require('../middleware/auth');
+const { adminLimiter } = require('../middleware/rateLimiter');
+const { escapeRegex, validateObjectId, validateRatePayload } = require('../middleware/validator');
+
+const VALID_CATEGORIES = ['vegetable', 'fruit', 'spice'];
+const VALID_SORTS = ['price_asc', 'price_desc', 'spike', 'default'];
 
 // Recipe suggestions helper returning 4 diverse dishes based on cheapest vegetables
 function generateDishSuggestions(veggies) {
@@ -9,7 +15,6 @@ function generateDishSuggestions(veggies) {
     return [];
   }
 
-  const names = veggies.map(v => v.name_en.toLowerCase());
   const v1 = veggies[0];
   const v2 = veggies[1] || v1;
   const v3 = veggies[2] || v2;
@@ -105,19 +110,19 @@ function generateDishSuggestions(veggies) {
       recipe_hi: [
         '1. कुकर में तुअर या मूंग दाल को टमाटर, हल्दी और हींग के साथ नरम होने तक पकाएं।',
         '2. पैन में १ चम्मच देसी घी में जीरा, सूखी लाल मिर्च और ८-१० लहसुन की कलियां भूनें।',
-        '3. कटी पालक डालकर भूनें, उबली दाल मिलाकर ६ मिनट पकाएं; गरमागरम भात या रोटी संग परोसें।'
+        '3. कटी पालक डालकर भूनें, उबली दाल मिलाकर ६ मिनट पकाएं; गरमागरम भात या रोटी संग परोसें।',
       ],
       recipe_mr: [
         '1. कुकरमध्ये तूर किंवा मूग डाळ टोमॅटो, हळद आणि हिंग घालून मऊ शिजवून घ्या.',
         '2. पॅनमध्ये १ चमचा साजूक तुपात जिरे, सुकी लाल मिरची आणि ८-१० लसूण पाकळ्यांची खमंग फोडणी द्या.',
         '3. बारीक चिरलेली पालक परतून त्यात शिजलेली डाळ घाला व ६ मिनिटे उकळा; भात किंवा भाकरीसोबत सर्व्ह करा.'
       ],
-      family_cost: produceCost + 18,
+      family_cost: Math.round(produceCost * 1.1) + 18,
       servings: '4 persons',
       savings_vs_hotel: 175
     },
 
-    // 4. Crispy Tea-Time Fritters / Snack
+    // 4. Tea-Time Crispy Bhaji / Snacks
     {
       id: 'dish-snack',
       type: 'snack',
@@ -153,18 +158,24 @@ function generateDishSuggestions(veggies) {
   return dishes;
 }
 
-// GET /api/rates and /api/rates/all - returns all rates (supports ?category= and ?search=)
+// GET /api/rates and /api/rates/all - returns all rates (supports sanitized ?category=, ?search=, ?sort=)
 router.get(['/rates', '/'], async (req, res) => {
   try {
     const { category, search, sort } = req.query;
     const filter = {};
 
+    // 1. Sanitized Category Whitelist
     if (category && category !== 'all') {
-      filter.category = category.toLowerCase().trim();
+      const cleanCat = String(category).toLowerCase().trim();
+      if (VALID_CATEGORIES.includes(cleanCat)) {
+        filter.category = cleanCat;
+      }
     }
 
-    if (search && search.trim()) {
-      const searchRegex = new RegExp(search.trim(), 'i');
+    // 2. Safe Search with Regex Injection Protection (ReDoS shield)
+    if (search && typeof search === 'string' && search.trim()) {
+      const sanitizedSearch = escapeRegex(search.trim());
+      const searchRegex = new RegExp(sanitizedSearch, 'i');
       filter.$or = [
         { name_en: searchRegex },
         { name_hi: searchRegex },
@@ -174,13 +185,17 @@ router.get(['/rates', '/'], async (req, res) => {
 
     let query = Rate.find(filter);
 
-    if (sort === 'price_asc') {
-      query = query.sort({ price_today: 1 });
-    } else if (sort === 'price_desc') {
-      query = query.sort({ price_today: -1 });
-    } else if (sort === 'spike') {
-      // client can also sort by spike, or default order
-      query = query.sort({ price_today: -1 });
+    // 3. Sanitized Sort Whitelist
+    if (sort && VALID_SORTS.includes(sort)) {
+      if (sort === 'price_asc') {
+        query = query.sort({ price_today: 1 });
+      } else if (sort === 'price_desc') {
+        query = query.sort({ price_today: -1 });
+      } else if (sort === 'spike') {
+        query = query.sort({ price_today: -1 });
+      } else {
+        query = query.sort({ category: 1, name_en: 1 });
+      }
     } else {
       query = query.sort({ category: 1, name_en: 1 });
     }
@@ -192,12 +207,12 @@ router.get(['/rates', '/'], async (req, res) => {
       rates
     });
   } catch (error) {
-    console.error('Error fetching rates:', error);
-    res.status(500).json({ success: false, message: 'Failed to fetch rates', error: error.message });
+    console.error('Error fetching rates:', error.message);
+    res.status(500).json({ success: false, message: 'Failed to fetch rates' });
   }
 });
 
-// GET /api/cook-today and /api/rates/cook-today - returns the 3 cheapest vegetables with dish suggestion & approx cost
+// GET /api/cook-today and /api/rates/cook-today - returns the 3 cheapest vegetables with 4 dish suggestions
 router.get(['/cook-today', '/rates/cook-today'], async (req, res) => {
   try {
     const cheapestVegetables = await Rate.find({ category: 'vegetable' })
@@ -214,17 +229,19 @@ router.get(['/cook-today', '/rates/cook-today'], async (req, res) => {
       dishes: dishes
     });
   } catch (error) {
-    console.error('Error fetching cook-today vegetables:', error);
-    res.status(500).json({ success: false, message: 'Failed to fetch cook-today items', error: error.message });
+    console.error('Error fetching cook-today vegetables:', error.message);
+    res.status(500).json({ success: false, message: 'Failed to fetch cook-today items' });
   }
 });
 
-// GET /api/season and /api/rates/season - returns items in season for the current month
+// GET /api/season and /api/rates/season - returns items in season for the requested/current month
 router.get(['/season', '/rates/season'], async (req, res) => {
   try {
     const now = new Date();
-    // Month number 1 to 12
-    const currentMonth = req.query.month ? parseInt(req.query.month, 10) : now.getMonth() + 1;
+    let monthNum = req.query.month ? parseInt(req.query.month, 10) : now.getMonth() + 1;
+    if (isNaN(monthNum) || monthNum < 1 || monthNum > 12) {
+      monthNum = now.getMonth() + 1;
+    }
 
     const monthNamesEn = [
       'January', 'February', 'March', 'April', 'May', 'June',
@@ -239,28 +256,26 @@ router.get(['/season', '/rates/season'], async (req, res) => {
       'जुलै', 'ऑगस्ट', 'सप्टेंबर', 'ऑक्टोबर', 'नोव्हेंबर', 'डिसेंबर'
     ];
 
-    const safeMonth = (currentMonth >= 1 && currentMonth <= 12) ? currentMonth : now.getMonth() + 1;
-
-    const seasonalItems = await Rate.find({ season_months: safeMonth })
+    const seasonalItems = await Rate.find({ season_months: monthNum })
       .sort({ category: 1, price_today: 1 });
 
     res.json({
       success: true,
-      month: safeMonth,
-      month_name_en: monthNamesEn[safeMonth - 1],
-      month_name_hi: monthNamesHi[safeMonth - 1],
-      month_name_mr: monthNamesMr[safeMonth - 1],
+      month: monthNum,
+      month_name_en: monthNamesEn[monthNum - 1],
+      month_name_hi: monthNamesHi[monthNum - 1],
+      month_name_mr: monthNamesMr[monthNum - 1],
       count: seasonalItems.length,
       items: seasonalItems
     });
   } catch (error) {
-    console.error('Error fetching seasonal items:', error);
-    res.status(500).json({ success: false, message: 'Failed to fetch seasonal items', error: error.message });
+    console.error('Error fetching seasonal items:', error.message);
+    res.status(500).json({ success: false, message: 'Failed to fetch seasonal items' });
   }
 });
 
-// GET /api/rates/:id - get single rate item
-router.get('/rates/:id', async (req, res) => {
+// GET /api/rates/:id - get single rate item (validates ObjectId)
+router.get('/rates/:id', validateObjectId('id'), async (req, res) => {
   try {
     const rate = await Rate.findById(req.params.id);
     if (!rate) {
@@ -268,12 +283,13 @@ router.get('/rates/:id', async (req, res) => {
     }
     res.json({ success: true, rate });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Error retrieving rate', error: error.message });
+    console.error('Error retrieving rate:', error.message);
+    res.status(500).json({ success: false, message: 'Error retrieving rate item' });
   }
 });
 
-// POST /api/rates - add a new rate
-router.post('/rates', async (req, res) => {
+// POST /api/rates - add a new rate (Admin Auth + Admin Rate Limiter + Validation)
+router.post('/rates', adminLimiter, requireAdminAuth, validateRatePayload(false), async (req, res) => {
   try {
     const {
       name_en,
@@ -285,15 +301,9 @@ router.post('/rates', async (req, res) => {
       price_yesterday,
       price_week_low,
       unit,
-      season_months
+      season_months,
+      image_url
     } = req.body;
-
-    if (!name_en || !name_hi || !name_mr || !category || !emoji || price_today === undefined) {
-      return res.status(400).json({
-        success: false,
-        message: 'Missing required fields: name_en, name_hi, name_mr, category, emoji, price_today'
-      });
-    }
 
     const newRate = new Rate({
       name_en: name_en.trim(),
@@ -301,11 +311,11 @@ router.post('/rates', async (req, res) => {
       name_mr: name_mr.trim(),
       category: category.toLowerCase().trim(),
       emoji: emoji.trim(),
-      image_url: req.body.image_url ? req.body.image_url.trim() : `/images/${name_en.toLowerCase().replace(/\s+/g, '_')}.jpg`,
+      image_url: image_url ? image_url.trim() : `/images/${name_en.toLowerCase().replace(/\s+/g, '_')}.jpg`,
       price_today: Number(price_today),
       price_yesterday: price_yesterday !== undefined ? Number(price_yesterday) : Number(price_today),
       price_week_low: price_week_low !== undefined ? Number(price_week_low) : Number(price_today),
-      unit: unit || 'kg',
+      unit: unit ? String(unit).slice(0, 20) : 'kg',
       date: new Date(),
       season_months: Array.isArray(season_months) ? season_months.map(Number) : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
     });
@@ -317,15 +327,27 @@ router.post('/rates', async (req, res) => {
       rate: saved
     });
   } catch (error) {
-    console.error('Error adding rate:', error);
+    console.error('Error adding rate:', error.message);
     res.status(400).json({ success: false, message: error.message });
   }
 });
 
-// PUT /api/rates/:id - update an existing rate
-router.put('/rates/:id', async (req, res) => {
+// PUT /api/rates/:id - update an existing rate (Admin Auth + Admin Rate Limiter + ObjectId & Payload Validation)
+router.put('/rates/:id', adminLimiter, requireAdminAuth, validateObjectId('id'), validateRatePayload(true), async (req, res) => {
   try {
-    const updateData = { ...req.body };
+    const updateData = {};
+    const allowedFields = [
+      'name_en', 'name_hi', 'name_mr', 'category', 'emoji',
+      'price_today', 'price_yesterday', 'price_week_low',
+      'unit', 'image_url', 'season_months'
+    ];
+
+    allowedFields.forEach(field => {
+      if (req.body[field] !== undefined) {
+        updateData[field] = req.body[field];
+      }
+    });
+
     if (updateData.price_today !== undefined) updateData.price_today = Number(updateData.price_today);
     if (updateData.price_yesterday !== undefined) updateData.price_yesterday = Number(updateData.price_yesterday);
     if (updateData.price_week_low !== undefined) updateData.price_week_low = Number(updateData.price_week_low);
@@ -347,13 +369,13 @@ router.put('/rates/:id', async (req, res) => {
       rate: updated
     });
   } catch (error) {
-    console.error('Error updating rate:', error);
+    console.error('Error updating rate:', error.message);
     res.status(400).json({ success: false, message: error.message });
   }
 });
 
-// DELETE /api/rates/:id - delete rate
-router.delete('/rates/:id', async (req, res) => {
+// DELETE /api/rates/:id - delete rate (Admin Auth + Admin Rate Limiter + ObjectId Validation)
+router.delete('/rates/:id', adminLimiter, requireAdminAuth, validateObjectId('id'), async (req, res) => {
   try {
     const deleted = await Rate.findByIdAndDelete(req.params.id);
     if (!deleted) {
@@ -361,13 +383,13 @@ router.delete('/rates/:id', async (req, res) => {
     }
     res.json({ success: true, message: 'Rate item removed from Mandi' });
   } catch (error) {
-    console.error('Error deleting rate:', error);
+    console.error('Error deleting rate:', error.message);
     res.status(500).json({ success: false, message: error.message });
   }
 });
 
-// POST /api/reset - reset rates to default sample items
-router.post('/reset', async (req, res) => {
+// POST /api/reset - reset rates to default sample items (Admin Auth + Admin Rate Limiter)
+router.post('/reset', adminLimiter, requireAdminAuth, async (req, res) => {
   try {
     await Rate.deleteMany({});
     const inserted = await Rate.insertMany(sampleRates);
@@ -377,7 +399,7 @@ router.post('/reset', async (req, res) => {
       count: inserted.length
     });
   } catch (error) {
-    console.error('Error resetting rates:', error);
+    console.error('Error resetting rates:', error.message);
     res.status(500).json({ success: false, message: error.message });
   }
 });
