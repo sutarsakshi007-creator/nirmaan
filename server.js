@@ -18,7 +18,13 @@ app.set('trust proxy', 1);
 
 // Health check endpoint for Render / cloud monitoring
 app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'ok', uptime: Math.round(process.uptime()), timestamp: new Date().toISOString() });
+  const isConnected = mongoose.connection.readyState === 1;
+  res.status(200).json({
+    status: isConnected ? 'ok' : 'initializing',
+    database: isConnected ? 'connected' : 'connecting',
+    uptime: Math.round(process.uptime()),
+    timestamp: new Date().toISOString()
+  });
 });
 
 // 1. Security Headers via Helmet (with CSP configured for Google Fonts & Canvas poster)
@@ -93,12 +99,16 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Connect to MongoDB & Start Server
-async function startServer() {
+// MongoDB Connection with Auto-Retry & Diagnostics
+async function connectToMongoDB() {
+  const maskedUri = MONGO_URI.replace(/\/\/[^:]+:([^@]+)@/, '//***:***@');
+  console.log('🔄 Connecting to MongoDB at:', maskedUri);
+
   try {
-    console.log('Connecting to MongoDB at:', MONGO_URI);
-    await mongoose.connect(MONGO_URI);
-    console.log('Connected to MongoDB (Mandi Mood DB)');
+    await mongoose.connect(MONGO_URI, {
+      serverSelectionTimeoutMS: 8000
+    });
+    console.log('✅ Connected to MongoDB (Mandi Mood DB)');
 
     // Auto-seed if database is freshly created / empty (e.g. Render cold start)
     try {
@@ -113,9 +123,22 @@ async function startServer() {
     } catch (seedErr) {
       console.warn('⚠️ Auto-seed check skipped or encountered non-critical error:', seedErr.message);
     }
+  } catch (err) {
+    console.error('❌ Failed to connect to MongoDB:', err.message);
+    console.error(`
+👉 RENDER / MONGODB ATLAS TROUBLESHOOTING:
+   1. Check MongoDB Atlas "Network Access": Make sure IP 0.0.0.0/0 is added (Allow from anywhere).
+   2. Check your MONGO_URI environment variable on Render.
+   3. Make sure special characters in your database password are URL-encoded.
+   🔄 Retrying connection in 6 seconds...
+`);
+    setTimeout(connectToMongoDB, 6000);
+  }
+}
 
-    app.listen(PORT, () => {
-      console.log(`
+// Start HTTP Server immediately so Render port detection succeeds
+app.listen(PORT, () => {
+  console.log(`
 =====================================================
   MANDI MOOD - APMC Vashi Daily Wholesale Market
 =====================================================
@@ -133,12 +156,6 @@ async function startServer() {
    - POST /api/reset (protected by x-api-key)
 =====================================================
 `);
-    });
-  } catch (err) {
-    console.error('Failed to connect to MongoDB:', err.message);
-    console.error('Make sure MongoDB is running or configure MONGO_URI in .env');
-    process.exit(1);
-  }
-}
-
-startServer();
+  // Initiate MongoDB connection asynchronously
+  connectToMongoDB();
+});
