@@ -1624,3 +1624,300 @@ body {
 .toast-notice.show {
   transform: translateX(-50%) translateY(0);
 }
+
+/* ==========================================================================
+   COMPREHENSIVE MOBILE VIEW OPTIMIZATION (Mobile-First Polish for <= 600px)
+   ========================================================================== */
+@media (max-width: 600px) {
+  .container {
+    padding: 0 12px;
+  }
+
+  .site-header {
+    padding: 10px 0 14px 0;
+  }
+
+  .header-top {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .lang-switcher {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .lang-btn {
+    flex: 1;
+    text-align: center;
+    padding: 6px 4px;
+    font-size: 0.8rem;
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .action-pill-btn {
+    flex: 1;
+    justify-content: center;
+    padding: 8px 6px;
+    font-size: 0.76rem;
+    white-space: nowrap;
+  }
+
+  .market-badge-pill {
+    font-size: 0.65rem;
+    padding: 3px 10px;
+  }
+
+  .brand-title {
+    font-size: clamp(1.85rem, 8vw, 2.4rem);
+    margin: 2px 0;
+  }
+
+  .brand-tagline {
+    font-size: 0.86rem;
+  }
+
+  .market-meta-bar {
+    gap: 5px;
+    margin-top: 6px;
+  }
+
+  .meta-chip {
+    font-size: 0.68rem;
+    padding: 2px 8px;
+  }
+
+  /* What's in Season Strip on Mobile */
+  .season-section {
+    padding: 16px 0 8px 0;
+  }
+
+  .section-title-wrap h2 {
+    font-size: 1.15rem;
+  }
+
+  .section-title-wrap p {
+    font-size: 0.76rem;
+  }
+
+  .season-scroll-container {
+    gap: 9px;
+    padding: 2px 2px 10px 2px;
+  }
+
+  .season-card {
+    width: 110px;
+    padding: 10px 6px;
+  }
+
+  .season-photo-wrap {
+    width: 50px;
+    height: 50px;
+    margin-bottom: 6px;
+  }
+
+  .season-card-name {
+    font-size: 0.78rem;
+  }
+
+  .season-card-price {
+    font-size: 0.82rem;
+  }
+
+  /* Chef's Smartest Pick on Mobile */
+  .cook-card {
+    padding: 14px 12px;
+  }
+
+  .cook-title-wrap h3 {
+    font-size: 1.18rem;
+  }
+
+  .dish-tabs-row {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 6px;
+    gap: 6px;
+  }
+
+  .dish-tabs-row::-webkit-scrollbar {
+    display: none;
+  }
+
+  .dish-tab-btn {
+    flex-shrink: 0;
+    font-size: 0.74rem;
+    padding: 5px 10px;
+  }
+
+  .dish-meta-row {
+    gap: 5px;
+    margin: 4px 0 10px 0;
+  }
+
+  .dish-meta-chip {
+    font-size: 0.68rem;
+    padding: 2px 6px;
+  }
+
+  .cheapest-veggies-showcase {
+    padding: 10px 8px;
+    margin-bottom: 12px;
+  }
+
+  .veggies-label {
+    font-size: 0.7rem;
+    margin-bottom: 6px;
+  }
+
+  .veggies-grid {
+    gap: 6px;
+  }
+
+  .veg-photo-wrap {
+    width: 44px;
+    height: 44px;
+    margin-bottom: 4px;
+  }
+
+  .veg-hero-pill {
+    padding: 6px 3px;
+  }
+
+  .veg-hero-pill .v-name {
+    font-size: 0.72rem;
+  }
+
+  .veg-hero-pill .v-price {
+    font-size: 0.78rem;
+  }
+
+  .cook-body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .recipe-steps {
+    gap: 6px;
+  }
+
+  .recipe-step-item {
+    font-size: 0.82rem;
+    line-height: 1.35;
+  }
+
+  .step-num {
+    width: 20px;
+    height: 20px;
+    font-size: 0.72rem;
+  }
+
+  .cook-cost-card {
+    padding: 12px 10px;
+  }
+
+  .cost-amount {
+    font-size: 1.8rem;
+  }
+
+  /* Controls Panel & Category Chips on Mobile */
+  .controls-panel {
+    padding: 12px 10px;
+    gap: 10px;
+  }
+
+  .search-input {
+    font-size: 0.84rem;
+    padding: 9px 12px 9px 34px;
+  }
+
+  .category-chips-row {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 6px;
+    gap: 6px;
+  }
+
+  .category-chips-row::-webkit-scrollbar {
+    display: none;
+  }
+
+  .category-chip {
+    flex-shrink: 0;
+    padding: 6px 12px;
+    font-size: 0.78rem;
+  }
+
+  .sort-counter-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .sort-wrap {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .sort-select {
+    flex: 1;
+    max-width: 210px;
+  }
+
+  /* Rates Grid on Mobile */
+  .rates-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .rate-card {
+    padding: 12px;
+    border-width: 2.5px;
+    box-shadow: 2.5px 3.5px 0 var(--color-dark);
+  }
+
+  .item-photo-wrap {
+    width: 62px;
+    height: 62px;
+    border-width: 2px;
+  }
+
+  .item-primary-name {
+    font-size: 1.15rem;
+  }
+
+  .item-secondary-name {
+    font-size: 0.74rem;
+  }
+
+  .price-big {
+    font-size: 1.65rem;
+  }
+
+  .yesterday-info {
+    font-size: 0.72rem;
+  }
+
+  /* Modals on Mobile */
+  .modal-dialog {
+    max-width: 95%;
+    max-height: 92vh;
+    padding: 14px;
+  }
+
+  .modal-header h3 {
+    font-size: 1.15rem;
+  }
+}
