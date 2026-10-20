@@ -42,6 +42,7 @@ mandi-mood/
 ├── seed.js                 # Database seeder (20 APMC Vashi items)
 ├── sampleRates.js          # Canonical 20 sample items dataset
 ├── public/
+│   ├── images/             # Real photography of all 20 produce items
 │   ├── index.html          # Mobile-first semantic HTML5 interface
 │   ├── style.css           # Custom CSS with Indian market poster theme
 │   ├── app.js              # Vanilla JS controller & Canvas poster generator
@@ -144,6 +145,7 @@ Open your browser at:
 | `name_mr` | String | Marathi name (e.g. "कांदा (Kanda)") |
 | `category` | String | Enum: `'vegetable'`, `'fruit'`, `'spice'` |
 | `emoji` | String | Visual icon (e.g. "🧅") |
+| `image_url` | String | Path/URL to real photography image (e.g. `"/images/onion.jpg"`) |
 | `price_today` | Number | Today's wholesale price in ₹ per unit |
 | `price_yesterday` | Number | Yesterday's price in ₹ per unit |
 | `price_week_low` | Number | 7-day low price in ₹ |
