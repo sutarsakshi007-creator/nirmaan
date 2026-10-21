@@ -2006,30 +2006,35 @@ body {
 
 .quick-mix-img-wrap {
   width: 100%;
-  height: 200px;
-  background: var(--color-cream-deep);
+  height: 240px;
+  background: #FFFDF9;
   position: relative;
   overflow: hidden;
   border-bottom: 2.5px solid var(--color-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .quick-mix-img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   display: block;
+  padding: 4px;
   transition: transform 0.35s ease;
 }
 
 .quick-mix-card:hover .quick-mix-img {
-  transform: scale(1.05);
+  transform: scale(1.02);
 }
 
 .quick-mix-badges-overlay {
   position: absolute;
-  top: 10px;
-  left: 10px;
-  right: 10px;
+  bottom: 8px;
+  left: 8px;
+  right: 8px;
+  top: auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -2248,13 +2253,15 @@ body {
 }
 
 .mix-modal-photo {
-  width: 110px;
+  width: 150px;
   height: 110px;
-  object-fit: cover;
+  object-fit: contain;
+  background: #FFFDF9;
   border-radius: var(--radius-md);
   border: 2px solid var(--color-dark);
   box-shadow: 2px 2px 0 var(--color-dark);
   flex-shrink: 0;
+  padding: 2px;
 }
 
 .mix-modal-hero-details h4 {
