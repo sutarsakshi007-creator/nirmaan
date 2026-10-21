@@ -712,9 +712,6 @@ function renderQuickMeals() {
       serving_size_en: '1 Bowl (~160g cooked) • 250g Jar (~4 Servings)',
       serving_size_hi: '१ कटोरी (~१६० ग्राम तैयार) • २५० ग्राम जार (~४ प्लेट)',
       serving_size_mr: '१ वाटी (~१६० ग्रॅम तयार) • २५० ग्रॅम बरणी (~४ प्लेट)',
-      estimated_cost_per_serving: 6.50,
-      cost_status_label: 'Estimated ingredient cost per serving — prototype estimate; verification pending',
-      packaging_note: 'Packaging excluded from per-serving ingredient cost',
       jar_net_wt: '250g',
       jar_servings: 4,
       jar_ingredient_cost: 26.00,
@@ -785,9 +782,6 @@ function renderQuickMeals() {
       serving_size_en: '1 Bowl (~180g cooked) • 250g Jar (~4 Servings)',
       serving_size_hi: '१ कटोरी (~१८० ग्राम तैयार) • २५० ग्राम जार (~४ प्लेट)',
       serving_size_mr: '१ वाटी (~१८० ग्रॅम तयार) • २५० ग्रॅम बरणी (~४ प्लेट)',
-      estimated_cost_per_serving: 5.80,
-      cost_status_label: 'Estimated ingredient cost per serving — prototype estimate; verification pending',
-      packaging_note: 'Packaging excluded from per-serving ingredient cost',
       jar_net_wt: '250g',
       jar_servings: 4,
       jar_ingredient_cost: 23.20,
@@ -881,27 +875,23 @@ function renderQuickMeals() {
             </div>
           </div>
 
-          <!-- Provisional Cost Card with Strict Estimate & Packaging Exclusion Labeling -->
-          <div class="quick-mix-cost-card">
-            <div class="cost-row-main">
-              <div class="cost-figure-wrap">
-                <span class="cost-curr">₹</span>
-                <span class="cost-val">${mix.estimated_cost_per_serving.toFixed(2)}</span>
-                <span class="cost-unit">/ serving</span>
+          <!-- Product Packaging & Jar Specs (Estimated ingredient cost per serving removed) -->
+          <div class="quick-mix-specs-card">
+            <div class="specs-row-main">
+              <div class="specs-mrp-wrap">
+                <span class="specs-mrp-label">Prototype MRP:</span>
+                <span class="specs-mrp-val">₹${(mix.mrp_estimate || (mix.id === 'upma-mix' ? 95 : 99)).toFixed(2)}</span>
+                <span class="specs-mrp-sub">(250g Jar)</span>
               </div>
-              <span class="cost-est-tag">⚠️ Provisional Estimate</span>
-            </div>
-            
-            <div class="cost-status-alert">
-              <strong>${dict.costStatusLabel || 'Estimated ingredient cost per serving — prototype estimate; verification pending.'}</strong>
+              <span class="cost-tag-actual">Glass Jar: ₹70</span>
             </div>
 
             <div class="cost-pkg-note">
-              <span>📦</span>
-              <span>${dict.packagingExcludedNote || 'Packaging excluded from per-serving cost (₹70 reusable glass jar entered separately)'}</span>
+              <span>🏺</span>
+              <span>250g Food-Grade Reusable Glass Jar (~4 Servings)</span>
             </div>
 
-            <!-- Comparison Section Temporarily Marked Pending Verification (Savings claim removed) -->
+            <!-- Comparison Section Temporarily Marked Pending Verification -->
             <div class="mix-comparison-pending-pill">
               <span>🔒</span>
               <span>${dict.commercialCompPending || 'Commercial store comparison pending verification'}</span>
@@ -1004,12 +994,8 @@ window.openQuickMixModal = function(mixId) {
             </tbody>
             <tfoot>
               <tr>
-                <td colspan="3" style="font-weight: 800;">
-                  Total Estimated Ingredient Cost (1 Serving):
-                  <div style="font-size: 0.7rem; font-weight: 600; color: #888;">*Prototype estimate; verification pending. Excludes packaging.</div>
-                </td>
-                <td style="text-align: right; font-weight: 900; font-size: 1.1rem; color: #2E7D32;">
-                  ₹${mix.estimated_cost_per_serving.toFixed(2)}
+                <td colspan="4" style="font-size: 0.76rem; color: #666; font-style: italic; text-align: left; background: #FAF9F6; padding: 10px;">
+                  ℹ️ Individual ingredients and baseline market rates provided for reference. Estimated ingredient cost per serving removed per evaluation standards.
                 </td>
               </tr>
             </tfoot>
@@ -1032,8 +1018,8 @@ window.openQuickMixModal = function(mixId) {
             <tbody>
               <tr>
                 <td><strong>Ingredients for Full 250g Jar</strong></td>
-                <td>4 Servings × ₹${mix.estimated_cost_per_serving.toFixed(2)} portion estimate</td>
-                <td style="text-align: right; font-weight: 700; color: #2E7D32;">₹${mix.jar_ingredient_cost ? mix.jar_ingredient_cost.toFixed(2) : (mix.estimated_cost_per_serving * 4).toFixed(2)}</td>
+                <td>4 Servings dry staples baseline (250g net)</td>
+                <td style="text-align: right; font-weight: 700; color: #2E7D32;">₹${mix.jar_ingredient_cost ? mix.jar_ingredient_cost.toFixed(2) : (mix.id === 'upma-mix' ? '23.20' : '26.00')}</td>
               </tr>
               <tr style="background: #FFF9C4;">
                 <td><strong>Food-Grade Glass Jar Packaging</strong> <span class="cost-tag-actual">Actual Entered Cost</span></td>
