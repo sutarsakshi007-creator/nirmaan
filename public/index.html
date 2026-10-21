@@ -122,7 +122,38 @@
       </div>
     </section>
 
-    <!-- 3. Today's Wholesale Rates (Search, Chips, Dynamic Grid) -->
+    <!-- 3. Quick Meals – Homemade Instant Mixes (Budget DIY Meal-Kit Prototypes) -->
+    <section class="quick-meals-section" id="quickMealsSection" aria-labelledby="quickMealsHeading">
+      <div class="section-header-row">
+        <div class="section-title-wrap">
+          <div class="section-badge-pill">
+            <span>🥣</span>
+            <span data-i18n="quickMealsBadge">Homemade Prototypes</span>
+          </div>
+          <h2 id="quickMealsHeading" data-i18n="quickMealsTitle">
+            Quick Meals – Homemade Instant Mixes
+          </h2>
+          <p data-i18n="quickMealsSub">
+            Budget-friendly DIY breakfast mixes made from APMC wholesale dry staples. Zero preservatives, ready in 5 minutes.
+          </p>
+        </div>
+      </div>
+
+      <!-- Prominent Disclaimers Banner -->
+      <div class="prototype-disclaimer-banner">
+        <span class="disc-icon">⚠️</span>
+        <div class="disc-text">
+          <span data-i18n="quickMealsDisclaimer">Estimated Prototype Costs: These homemade instant mixes are experimental prototypes for budget meal-kits, not commercially certified products. Cost calculations are estimates derived from APMC wholesale commodity baselines.</span>
+        </div>
+      </div>
+
+      <!-- Container dynamically rendered by app.js -->
+      <div class="quick-meals-grid" id="quickMealsContainer">
+        <!-- Rendered dynamically by app.js -->
+      </div>
+    </section>
+
+    <!-- 4. Today's Wholesale Rates (Search, Chips, Dynamic Grid) -->
     <section class="rates-section" id="ratesSection" aria-labelledby="ratesHeading">
       
       <!-- Search & Controls Panel -->
@@ -223,6 +254,25 @@
             <span data-i18n="shareWhatsApp">Share to WhatsApp</span>
           </button>
         </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Quick Mix Details / Recipe Modal -->
+  <div class="modal-overlay" id="quickMixModal" role="dialog" aria-modal="true" aria-labelledby="quickMixModalTitle">
+    <div class="modal-container quick-mix-modal-container">
+      
+      <div class="modal-header">
+        <h3 id="quickMixModalTitle">
+          <span>🥣</span>
+          <span id="quickMixModalName">Instant Mix Recipe</span>
+        </h3>
+        <button type="button" class="modal-close-btn" id="closeQuickMixBtn" aria-label="Close modal">✕</button>
+      </div>
+
+      <div class="modal-body" id="quickMixModalBody">
+        <!-- Injected dynamically by app.js -->
       </div>
 
     </div>

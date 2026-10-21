@@ -300,6 +300,124 @@ router.get(['/cook-today', '/rates/cook-today'], async (req, res) => {
   }
 });
 
+// GET /api/quick-meals and /api/rates/quick-meals - returns homemade instant mixes prototypes with APMC market cost connections
+router.get(['/quick-meals', '/rates/quick-meals'], async (req, res) => {
+  try {
+    let greenChilliRate = 48;
+    const mongoose = require('mongoose');
+    if (mongoose.connection.readyState === 1) {
+      const chilliDoc = await Rate.findOne({ name_en: /Green Chilli/i });
+      if (chilliDoc && chilliDoc.price_today) {
+        greenChilliRate = chilliDoc.price_today;
+      }
+    }
+
+    const mixes = [
+      {
+        id: 'poha-mix',
+        name_en: 'Instant Poha Mix',
+        name_hi: 'इंस्टेंट पोहा मिक्स',
+        name_mr: 'इन्स्टंट पोहे मिक्स',
+        image_url: '/images/poha_mix.jpg',
+        prep_time: '5 mins',
+        prep_time_hi: '५ मिनट',
+        prep_time_mr: '५ मिनिटे',
+        serving_size_en: '1 Bowl (160g cooked)',
+        serving_size_hi: '१ प्लेट (१६० ग्राम तैयार)',
+        serving_size_mr: '१ प्लेट (१६० ग्रॅम तयार)',
+        estimated_cost_per_serving: 6.50,
+        commercial_cup_cost: 45,
+        estimated_savings: 38.50,
+        is_estimate: true,
+        ingredients_list_en: 'Poha, Cumin, Mustard seeds, Turmeric, Salt, Fried chilli, Peanuts',
+        ingredients_list_hi: 'पोहा, जीरा, राई, हल्दी, नमक, तली हरी मिर्च, मूंगफली',
+        ingredients_list_mr: 'पोहे, जिरे, मोहरी, हळद, मीठ, तळलेली हिरवी मिरची, शेंगदाणे',
+        ingredient_breakdown: [
+          { name: 'Thick Poha (Rice Flakes)', amount: '45g', rate_basis: 'APMC wholesale ₹42/kg', cost: '₹1.90' },
+          { name: 'Roasted Peanuts', amount: '10g', rate_basis: 'Wholesale ₹120/kg', cost: '₹1.20' },
+          { name: 'Mustard & Cumin Seeds', amount: '2g', rate_basis: 'Spice market ₹280/kg', cost: '₹0.60' },
+          { name: 'Fried Green Chilli', amount: '2g', rate_basis: `APMC Live ₹${greenChilliRate}/kg`, cost: '₹0.50' },
+          { name: 'Turmeric, Salt & Curry Leaf', amount: '1g', rate_basis: 'Pantry staples', cost: '₹0.80' },
+          { name: 'Cooking Steam / Fuel', amount: 'Boiling water', rate_basis: 'Domestic fuel', cost: '₹1.50' }
+        ],
+        steps_en: [
+          'Empty the Instant Poha Mix (60g dry) into a heat-safe breakfast bowl or mug.',
+          'Pour approx. 90ml (1/2 cup) of rolling boiling water over the mix until just submerged.',
+          'Cover tightly with a plate and let it rest undisturbed for 4-5 minutes to steam through.',
+          'Gently fluff with a fork, squeeze a slice of fresh APMC lemon, and garnish with fresh coriander.'
+        ],
+        steps_hi: [
+          'इंस्टेंट पोहा मिक्स (६० ग्राम) को एक कटोरी या मग में निकालें।',
+          'लगभग ९० मिली (आधा कप) खौलता हुआ गर्म पानी ऊपर से डालें ताकि पोहा भीग जाए।',
+          'ढक्कन लगाकर ४ से ५ मिनट के लिए भाप में पकने दें।',
+          'कांटे से धीरे से हिलाएं, ऊपर से ताज़ा नींबू निचोड़ें और हरा धनिया डालकर परोसें।'
+        ],
+        steps_mr: [
+          'इन्स्टंट पोहे मिक्स (६० ग्रॅम) एका बाऊल किंवा डब्यात काढा.',
+          'वरून अंदाजे ९० मिली (अर्धा कप) कडक उकळते पाणी पोहे भिजतील इतके घाला.',
+          'झाकण ठेवून ४ ते ५ मिनिटे वाफेवर स्थिर राहू द्या.',
+          'झाकण उघडून चमच्याने मोकळे करा, वरून ताजा लिंबू पिळा आणि बारीक कोथिंबीर घालून गरमागरम आस्वाद घ्या.'
+        ]
+      },
+      {
+        id: 'upma-mix',
+        name_en: 'Instant Upma Mix',
+        name_hi: 'इंस्टेंट उपमा मिक्स',
+        name_mr: 'इन्स्टंट उपमा मिक्स',
+        image_url: '/images/upma_mix.jpg',
+        prep_time: '6 mins',
+        prep_time_hi: '६ मिनट',
+        prep_time_mr: '६ मिनिटे',
+        serving_size_en: '1 Bowl (180g cooked)',
+        serving_size_hi: '१ प्लेट (१८० ग्राम तैयार)',
+        serving_size_mr: '१ प्लेट (१८० ग्रॅम तयार)',
+        estimated_cost_per_serving: 5.80,
+        commercial_cup_cost: 45,
+        estimated_savings: 39.20,
+        is_estimate: true,
+        ingredients_list_en: 'Roasted semolina (rava), Mustard seeds, Cumin, Fried chilli, Peanuts, Salt',
+        ingredients_list_hi: 'भुनी सूजी (रवा), राई, जीरा, तली हरी मिर्च, मूंगफली, नमक',
+        ingredients_list_mr: 'भाजलेला रवा, मोहरी, जिरे, तळलेली हिरवी मिरची, शेंगदाणे, मीठ',
+        ingredient_breakdown: [
+          { name: 'Roasted Semolina (Rava)', amount: '45g', rate_basis: 'APMC wholesale ₹38/kg', cost: '₹1.70' },
+          { name: 'Roasted Peanuts', amount: '8g', rate_basis: 'Wholesale ₹120/kg', cost: '₹0.96' },
+          { name: 'Mustard & Cumin Seeds', amount: '3g', rate_basis: 'Spice market ₹280/kg', cost: '₹0.75' },
+          { name: 'Fried Green Chilli', amount: '2g', rate_basis: `APMC Live ₹${greenChilliRate}/kg`, cost: '₹0.50' },
+          { name: 'Salt & Roasting Ghee/Oil', amount: '2g', rate_basis: 'Pantry staples', cost: '₹0.89' },
+          { name: 'Simmering Fuel', amount: '180ml water', rate_basis: 'Domestic fuel', cost: '₹1.00' }
+        ],
+        steps_en: [
+          'Bring 1.25 cups (approx. 180ml) of water to a rolling boil in a small saucepan.',
+          'Gradually pour in the Instant Upma Mix while stirring continuously to prevent any lumps from forming.',
+          'Cover with a lid and simmer gently on low flame for 3 minutes until all water is fully absorbed.',
+          'Turn off flame, let sit covered for 1 minute, and serve hot with coconut chutney or a spoonful of desi ghee.'
+        ],
+        steps_hi: [
+          'एक छोटे पैन में सवा कप (लगभग १८० मिली) पानी उबाल लें।',
+          'आंच धीमी करें और धीरे-धीरे इंस्टेंट उपमा मिक्स डालते हुए लगातार चम्मच से चलाएं ताकि गांठें न पड़ें।',
+          'ढक्कन लगाकर ३ मिनट धीमी आंच पर पकने दें जब तक पानी पूरी तरह सोख न ले।',
+          'गैस बंद करें, १ मिनट ढककर रखें और ऊपर से १ चम्मच देसी घी या नारियल चटनी के साथ गरमागरम परोसें।'
+        ],
+        steps_mr: [
+          'एका लहान पातेल्यात सव्वा कप (अंदाजे १८० मिली) पाणी चांगले उकळून घ्या.',
+          'गॅस मंद करा आणि इन्स्टंट उपमा मिक्स हळूहळू ओता व गुठळ्या होऊ नयेत म्हणून चमच्याने ढवळत राहा.',
+          'झाकण ठेवून ३ मिनिटे मंद आचेवर पाणी शोषून घेईपर्यंत वाफ काढा.',
+          'गॅस बंद करून १ मिनिट झाकून ठेवा आणि खोबऱ्याच्या चटणीसोबत किंवा साजूक तूप घालून गरमागरम वाढा.'
+        ]
+      }
+    ];
+
+    res.json({
+      success: true,
+      count: mixes.length,
+      disclaimer: 'Estimated prototype cost based on APMC wholesale baseline rates. Non-certified homemade experimental meal-kit.',
+      mixes
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Error retrieving quick meals' });
+  }
+});
+
 // GET /api/season and /api/rates/season - returns items in season for the requested/current month
 router.get(['/season', '/rates/season'], async (req, res) => {
   const now = new Date();

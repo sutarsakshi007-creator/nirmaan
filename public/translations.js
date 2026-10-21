@@ -61,7 +61,21 @@ const translations = {
     sortDefault: "Standard",
     sortLowHigh: "Price: Low to High",
     sortHighLow: "Price: High to Low",
-    sortSpike: "Price Spikes First"
+    sortSpike: "Price Spikes First",
+    quickMealsTitle: "Quick Meals – Homemade Instant Mixes",
+    quickMealsBadge: "Homemade Prototypes",
+    quickMealsSub: "Budget-friendly DIY breakfast mixes made from APMC wholesale dry staples. Zero preservatives, ready in 5 minutes.",
+    quickMealsDisclaimer: "Estimated Prototype Costs: These homemade instant mixes are experimental prototypes for budget meal-kits, not commercially certified products. Cost calculations are estimates derived from APMC wholesale commodity baselines.",
+    viewRecipeBtn: "View Recipe & Cost Breakdown",
+    prepTimeLabel: "Prep Time",
+    servingSizeLabel: "Serving Size",
+    estCostServingLabel: "Estimated Cost",
+    commercialCompLabel: "Save ~₹35 vs Store Cup (₹45)",
+    ingredientsListLabel: "Key Ingredients",
+    instructionsLabel: "Step-by-Step Cooking Instructions",
+    costBreakdownLabel: "Estimated Ingredient Cost Breakdown",
+    prototypeNote: "Homemade Kitchen Trial • Non-commercial",
+    unverifiedCostNotice: "*Unverified prototype estimate based on APMC wholesale baseline rates."
   },
   hi: {
     appTitle: "मंडी मूड",
@@ -124,7 +138,21 @@ const translations = {
     sortDefault: "सामान्य",
     sortLowHigh: "भाव: कम से ज्यादा",
     sortHighLow: "भाव: ज्यादा से कम",
-    sortSpike: "तेज भाव वाले पहले"
+    sortSpike: "तेज भाव वाले पहले",
+    quickMealsTitle: "झटपट भोजन – होममेड इंस्टेंट मिक्स",
+    quickMealsBadge: "घरेलू प्रोटोटाइप",
+    quickMealsSub: "एपीएमसी थोक किराना सामग्री से बने बजट-फ्रेंडली नाश्ता मिक्स। बिना किसी प्रिजर्वेटिव के, ५ मिनट में तैयार।",
+    quickMealsDisclaimer: "अनुमानित प्रोटोटाइप लागत: ये घरेलू इंस्टेंट मिक्स बजट मील-किट के प्रायोगिक प्रोटोटाइप हैं, व्यावसायिक रूप से प्रमाणित उत्पाद नहीं। लागत एपीएमसी थोक दरों पर आधारित अनुमान है।",
+    viewRecipeBtn: "रेसिपी व खर्च विवरण देखें",
+    prepTimeLabel: "बनाने का समय",
+    servingSizeLabel: "मात्रा",
+    estCostServingLabel: "अनुमानित खर्च",
+    commercialCompLabel: "बाज़ार के पैकेट (₹४५) से ~₹३५ की बचत",
+    ingredientsListLabel: "मुख्य सामग्री",
+    instructionsLabel: "बनाने की क्रमवार विधि",
+    costBreakdownLabel: "सामग्री अनुसार अनुमानित खर्च विवरण",
+    prototypeNote: "घरेलू किचन ट्रायल • गैर-व्यावसायिक",
+    unverifiedCostNotice: "*एपीएमसी थोक दरों पर आधारित असत्यापित अनुमानित लागत।"
   },
   mr: {
     appTitle: "मंडी मूड",
@@ -187,7 +215,21 @@ const translations = {
     sortDefault: "मूळ क्रमवारी",
     sortLowHigh: "दर: कमी ते जास्त",
     sortHighLow: "दर: जास्त ते कमी",
-    sortSpike: "वाढलेले भाव आधी"
+    sortSpike: "वाढलेले भाव आधी",
+    quickMealsTitle: "झटपट जेवण – घरगुती इन्स्टंट मिक्स",
+    quickMealsBadge: "घरगुती प्रोटोटाइप",
+    quickMealsSub: "एपीएमसी घाऊक धान्यांपासून बनवलेले परवडणारे घरगुती नाश्ता मिक्स. कोणतेही प्रिझर्व्हेटिव्ह नाही, ५ मिनिटांत तयार.",
+    quickMealsDisclaimer: "अंदाजे प्रोटोटाइप खर्च: हे घरगुती इन्स्टंट मिक्स परवडणाऱ्या मील-किटचे प्रायोगिक प्रोटोटाइप आहेत, व्यावसायिक प्रमाणित उत्पादन नाही. खर्च एपीएमसी घाऊक बाजारभावावर आधारित अंदाज आहे.",
+    viewRecipeBtn: "रेसिपी व खर्चाचा तपशील पहा",
+    prepTimeLabel: "तयारी वेळ",
+    servingSizeLabel: "प्रमाण",
+    estCostServingLabel: "अंदाजे खर्च",
+    commercialCompLabel: "बाजारातील कप (₹४५) पेक्षा ~₹३५ बचत",
+    ingredientsListLabel: "मुख्य साहित्य",
+    instructionsLabel: "कृती (स्टेप-बाय-स्टेप)",
+    costBreakdownLabel: "साहित्यानुसार अंदाजे खर्चाचा तपशील",
+    prototypeNote: "घरगुती किचन ट्रायल • बिगर-व्यावसायिक",
+    unverifiedCostNotice: "*एपीएमसी घाऊक बाजारभावावर आधारित असत्यापित अंदाजे खर्च."
   }
 };
 

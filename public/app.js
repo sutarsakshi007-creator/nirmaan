@@ -14,7 +14,8 @@ const state = {
   searchQuery: '',
   sortOption: 'default',
   editingRateId: null,
-  selectedDishIndex: 0
+  selectedDishIndex: 0,
+  quickMeals: []
 };
 
 // DOM Elements
@@ -32,9 +33,14 @@ const elements = {
   seasonMonthName: document.getElementById('seasonMonthName'),
   ratesGrid: document.getElementById('ratesGrid'),
   cookContainer: document.getElementById('cookContainer'),
+  quickMealsContainer: document.getElementById('quickMealsContainer'),
   // Modals
   posterModal: document.getElementById('posterModal'),
   adminModal: document.getElementById('adminModal'),
+  quickMixModal: document.getElementById('quickMixModal'),
+  closeQuickMixBtn: document.getElementById('closeQuickMixBtn'),
+  quickMixModalBody: document.getElementById('quickMixModalBody'),
+  quickMixModalName: document.getElementById('quickMixModalName'),
   posterCanvas: document.getElementById('posterCanvas'),
   openPosterBtn: document.getElementById('openPosterBtn'),
   closePosterBtn: document.getElementById('closePosterBtn'),
@@ -119,11 +125,28 @@ function initEventListeners() {
   elements.adminForm.addEventListener('submit', handleAdminFormSubmit);
   elements.resetSeedBtn.addEventListener('click', handleResetSeed);
 
+  // Quick Mix Modal Close
+  if (elements.closeQuickMixBtn) {
+    elements.closeQuickMixBtn.addEventListener('click', closeQuickMixModal);
+  }
+
   // Close modals on background click
   window.addEventListener('click', (e) => {
     if (e.target === elements.posterModal) elements.posterModal.classList.remove('open');
     if (e.target === elements.adminModal) elements.adminModal.classList.remove('open');
+    if (e.target === elements.quickMixModal) closeQuickMixModal();
   });
+
+  // Delegated click listener for quick mix details buttons
+  if (elements.quickMealsContainer) {
+    elements.quickMealsContainer.addEventListener('click', (e) => {
+      const btn = e.target.closest('.btn-mix-details');
+      if (btn) {
+        const mixId = btn.getAttribute('data-mix');
+        openQuickMixModal(mixId);
+      }
+    });
+  }
 
   // Chef's recipe dish selector (delegated listener to guarantee click switching across all devices)
   if (elements.cookContainer) {
@@ -204,9 +227,22 @@ async function loadAllData() {
   await Promise.all([
     fetchRates(),
     fetchCookToday(),
+    fetchQuickMeals(),
     fetchSeason()
   ]);
   renderAll();
+}
+
+async function fetchQuickMeals() {
+  try {
+    const res = await fetch('/api/quick-meals');
+    const data = await res.json();
+    if (data.success && Array.isArray(data.mixes)) {
+      state.quickMeals = data.mixes;
+    }
+  } catch (err) {
+    console.warn('Quick meals API unreachable, using built-in prototype mixes:', err);
+  }
 }
 
 async function fetchRates() {
@@ -323,6 +359,7 @@ function renderCounter() {
 function renderAll() {
   renderSeasonStrip();
   renderCookToday();
+  renderQuickMeals();
   applyFilters();
 }
 
@@ -651,6 +688,274 @@ function renderCookToday() {
 window.selectDishIndex = function(index) {
   state.selectedDishIndex = Number(index) || 0;
   renderCookToday();
+};
+
+// ==========================================================================
+// 3. QUICK MEALS – HOMEMADE INSTANT MIXES (DIY Meal-Kit Prototypes)
+// ==========================================================================
+function renderQuickMeals() {
+  if (!elements.quickMealsContainer) return;
+  const dict = translations[state.currentLang] || translations.en;
+
+  const mixes = (state.quickMeals && state.quickMeals.length > 0) ? state.quickMeals : [
+    {
+      id: 'poha-mix',
+      name_en: 'Instant Poha Mix',
+      name_hi: 'इंस्टेंट पोहा मिक्स',
+      name_mr: 'इन्स्टंट पोहे मिक्स',
+      image_url: '/images/poha_mix.jpg',
+      prep_time: '5 mins',
+      prep_time_hi: '५ मिनट',
+      prep_time_mr: '५ मिनिटे',
+      serving_size_en: '1 Bowl (160g cooked)',
+      serving_size_hi: '१ प्लेट (१६० ग्राम तैयार)',
+      serving_size_mr: '१ प्लेट (१६० ग्रॅम तयार)',
+      estimated_cost_per_serving: 6.50,
+      commercial_cup_cost: 45,
+      estimated_savings: 38.50,
+      is_estimate: true,
+      ingredients_list_en: 'Poha, Cumin, Mustard seeds, Turmeric, Salt, Fried chilli, Peanuts',
+      ingredients_list_hi: 'पोहा, जीरा, राई, हल्दी, नमक, तली हरी मिर्च, मूंगफली',
+      ingredients_list_mr: 'पोहे, जिरे, मोहरी, हळद, मीठ, तळलेली हिरवी मिरची, शेंगदाणे',
+      ingredient_breakdown: [
+        { name: 'Thick Poha (Rice Flakes)', amount: '45g', rate_basis: 'APMC wholesale ₹42/kg', cost: '₹1.90' },
+        { name: 'Roasted Peanuts', amount: '10g', rate_basis: 'Wholesale ₹120/kg', cost: '₹1.20' },
+        { name: 'Mustard & Cumin Seeds', amount: '2g', rate_basis: 'Spice market ₹280/kg', cost: '₹0.60' },
+        { name: 'Fried Green Chilli', amount: '2g', rate_basis: 'APMC Live ₹48/kg', cost: '₹0.50' },
+        { name: 'Turmeric, Salt & Curry Leaf', amount: '1g', rate_basis: 'Pantry staples', cost: '₹0.80' },
+        { name: 'Cooking Steam / Fuel', amount: 'Boiling water', rate_basis: 'Domestic fuel', cost: '₹1.50' }
+      ],
+      steps_en: [
+        'Empty the Instant Poha Mix (60g dry) into a heat-safe breakfast bowl or mug.',
+        'Pour approx. 90ml (1/2 cup) of rolling boiling water over the mix until just submerged.',
+        'Cover tightly with a plate and let it rest undisturbed for 4-5 minutes to steam through.',
+        'Gently fluff with a fork, squeeze a slice of fresh APMC lemon, and garnish with fresh coriander.'
+      ],
+      steps_hi: [
+        'इंस्टेंट पोहा मिक्स (६० ग्राम) को एक कटोरी या मग में निकालें।',
+        'लगभग ९० मिली (आधा कप) खौलता हुआ गर्म पानी ऊपर से डालें ताकि पोहा भीग जाए।',
+        'ढक्कन लगाकर ४ से ५ मिनट के लिए भाप में पकने दें।',
+        'कांटे से धीरे से हिलाएं, ऊपर से ताज़ा नींबू निचोड़ें और हरा धनिया डालकर परोसें।'
+      ],
+      steps_mr: [
+        'इन्स्टंट पोहे मिक्स (६० ग्रॅम) एका बाऊल किंवा डब्यात काढा.',
+        'वरून अंदाजे ९० मिली (अर्धा कप) कडक उकळते पाणी पोहे भिजतील इतके घाला.',
+        'झाकण ठेवून ४ ते ५ मिनिटे वाफेवर स्थिर राहू द्या.',
+        'झाकण उघडून चमच्याने मोकळे करा, वरून ताजा लिंबू पिळा आणि बारीक कोथिंबीर घालून गरमागरम आस्वाद घ्या.'
+      ]
+    },
+    {
+      id: 'upma-mix',
+      name_en: 'Instant Upma Mix',
+      name_hi: 'इंस्टेंट उपमा मिक्स',
+      name_mr: 'इन्स्टंट उपमा मिक्स',
+      image_url: '/images/upma_mix.jpg',
+      prep_time: '6 mins',
+      prep_time_hi: '६ मिनट',
+      prep_time_mr: '६ मिनिटे',
+      serving_size_en: '1 Bowl (180g cooked)',
+      serving_size_hi: '१ प्लेट (१८० ग्राम तैयार)',
+      serving_size_mr: '१ प्लेट (१८० ग्रॅम तयार)',
+      estimated_cost_per_serving: 5.80,
+      commercial_cup_cost: 45,
+      estimated_savings: 39.20,
+      is_estimate: true,
+      ingredients_list_en: 'Roasted semolina (rava), Mustard seeds, Cumin, Fried chilli, Peanuts, Salt',
+      ingredients_list_hi: 'भुनी सूजी (रवा), राई, जीरा, तली हरी मिर्च, मूंगफली, नमक',
+      ingredients_list_mr: 'भाजलेला रवा, मोहरी, जिरे, तळलेली हिरवी मिरची, शेंगदाणे, मीठ',
+      ingredient_breakdown: [
+        { name: 'Roasted Semolina (Rava)', amount: '45g', rate_basis: 'APMC wholesale ₹38/kg', cost: '₹1.70' },
+        { name: 'Roasted Peanuts', amount: '8g', rate_basis: 'Wholesale ₹120/kg', cost: '₹0.96' },
+        { name: 'Mustard & Cumin Seeds', amount: '3g', rate_basis: 'Spice market ₹280/kg', cost: '₹0.75' },
+        { name: 'Fried Green Chilli', amount: '2g', rate_basis: 'APMC Live ₹48/kg', cost: '₹0.50' },
+        { name: 'Salt & Roasting Ghee/Oil', amount: '2g', rate_basis: 'Pantry staples', cost: '₹0.89' },
+        { name: 'Simmering Fuel', amount: '180ml water', rate_basis: 'Domestic fuel', cost: '₹1.00' }
+      ],
+      steps_en: [
+        'Bring 1.25 cups (approx. 180ml) of water to a rolling boil in a small saucepan.',
+        'Gradually pour in the Instant Upma Mix while stirring continuously to prevent any lumps from forming.',
+        'Cover with a lid and simmer gently on low flame for 3 minutes until all water is fully absorbed.',
+        'Turn off flame, let sit covered for 1 minute, and serve hot with coconut chutney or a spoonful of desi ghee.'
+      ],
+      steps_hi: [
+        'एक छोटे पैन में सवा कप (लगभग १८० मिली) पानी उबाल लें।',
+        'आंच धीमी करें और धीरे-धीरे इंस्टेंट उपमा मिक्स डालते हुए लगातार चम्मच से चलाएं ताकि गांठें न पड़ें।',
+        'ढक्कन लगाकर ३ मिनट धीमी आंच पर पकने दें जब तक पानी पूरी तरह सोख न ले।',
+        'गैस बंद करें, १ मिनट ढककर रखें और ऊपर से १ चम्मच देसी घी या नारियल चटनी के साथ गरमागरम परोसें।'
+      ],
+      steps_mr: [
+        'एका लहान पातेल्यात सव्वा कप (अंदाजे १८० मिली) पाणी चांगले उकळून घ्या.',
+        'गॅस मंद करा आणि इन्स्टंट उपमा मिक्स हळूहळू ओता व गुठळ्या होऊ नयेत म्हणून चमच्याने ढवळत राहा.',
+        'झाकण ठेवून ३ मिनिटे मंद आचेवर पाणी शोषून घेईपर्यंत वाफ काढा.',
+        'गॅस बंद करून १ मिनिट झाकून ठेवा आणि खोबऱ्याच्या चटणीसोबत किंवा साजूक तूप घालून गरमागरम वाढा.'
+      ]
+    }
+  ];
+
+  state.quickMeals = mixes;
+
+  elements.quickMealsContainer.innerHTML = mixes.map(mix => {
+    const title = state.currentLang === 'hi' ? mix.name_hi : state.currentLang === 'mr' ? mix.name_mr : mix.name_en;
+    const prepTime = state.currentLang === 'hi' ? mix.prep_time_hi : state.currentLang === 'mr' ? mix.prep_time_mr : mix.prep_time;
+    const servingSize = state.currentLang === 'hi' ? mix.serving_size_hi : state.currentLang === 'mr' ? mix.serving_size_mr : mix.serving_size_en;
+    const ingredients = state.currentLang === 'hi' ? mix.ingredients_list_hi : state.currentLang === 'mr' ? mix.ingredients_list_mr : mix.ingredients_list_en;
+    const ingredientsArray = ingredients.split(',').map(s => s.trim());
+
+    return `
+      <div class="quick-mix-card" data-mix-id="${mix.id}">
+        <div class="quick-mix-img-wrap">
+          <img src="${mix.image_url}" alt="${escapeHtml(title)}" class="quick-mix-img" loading="lazy">
+          <div class="quick-mix-badges-overlay">
+            <span class="mix-badge time">⏱️ ${prepTime}</span>
+            <span class="mix-badge prototype">🧪 ${dict.quickMealsBadge || 'Homemade Trial'}</span>
+          </div>
+        </div>
+
+        <div class="quick-mix-content">
+          <div class="quick-mix-header">
+            <h3 class="quick-mix-title">${escapeHtml(title)}</h3>
+            <span class="quick-mix-serving">🥣 ${servingSize}</span>
+          </div>
+
+          <div class="quick-mix-ingredients-block">
+            <div class="mix-ing-label"><span>🌱</span> <span>${dict.ingredientsListLabel || 'Key Ingredients'}:</span></div>
+            <div class="mix-ing-chips">
+              ${ingredientsArray.map(ing => `<span class="mix-chip">${escapeHtml(ing)}</span>`).join('')}
+            </div>
+          </div>
+
+          <div class="quick-mix-cost-card">
+            <div class="cost-row-main">
+              <div class="cost-figure-wrap">
+                <span class="cost-curr">₹</span>
+                <span class="cost-val">${mix.estimated_cost_per_serving.toFixed(2)}</span>
+                <span class="cost-unit">/ serving</span>
+              </div>
+              <span class="cost-est-tag">*Estimated Prototype Cost</span>
+            </div>
+            
+            <div class="mix-savings-pill">
+              <span>✨</span>
+              <span>${dict.commercialCompLabel || 'Save ~₹35 vs store cup (₹45)'}</span>
+            </div>
+            
+            <div class="cost-disclaimer-sub">
+              ${dict.unverifiedCostNotice || '*Unverified prototype estimate based on APMC wholesale baseline rates.'}
+            </div>
+          </div>
+
+          <button type="button" class="btn-mix-details" data-mix="${mix.id}">
+            <span>📖</span>
+            <span>${dict.viewRecipeBtn || 'View Recipe & Cost Breakdown'}</span>
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+window.openQuickMixModal = function(mixId) {
+  const dict = translations[state.currentLang] || translations.en;
+  const mix = (state.quickMeals || []).find(m => m.id === mixId);
+  if (!mix || !elements.quickMixModal) return;
+
+  const title = state.currentLang === 'hi' ? mix.name_hi : state.currentLang === 'mr' ? mix.name_mr : mix.name_en;
+  const prepTime = state.currentLang === 'hi' ? mix.prep_time_hi : state.currentLang === 'mr' ? mix.prep_time_mr : mix.prep_time;
+  const servingSize = state.currentLang === 'hi' ? mix.serving_size_hi : state.currentLang === 'mr' ? mix.serving_size_mr : mix.serving_size_en;
+  const steps = state.currentLang === 'hi' ? mix.steps_hi : state.currentLang === 'mr' ? mix.steps_mr : mix.steps_en;
+
+  if (elements.quickMixModalName) {
+    elements.quickMixModalName.textContent = title;
+  }
+
+  if (elements.quickMixModalBody) {
+    elements.quickMixModalBody.innerHTML = `
+      <div class="mix-modal-hero">
+        <img src="${mix.image_url}" alt="${escapeHtml(title)}" class="mix-modal-photo">
+        <div class="mix-modal-hero-details">
+          <h4>${escapeHtml(title)}</h4>
+          <p style="font-size: 0.82rem; color: #555; margin-bottom: 8px;">
+            Homemade ready-to-cook dry breakfast premix kit. Just add boiling water for a wholesome, fresh meal in minutes.
+          </p>
+          <div class="modal-spec-chips">
+            <span class="spec-chip">⏱️ ${dict.prepTimeLabel || 'Prep Time'}: <strong>${prepTime}</strong></span>
+            <span class="spec-chip">🥣 ${dict.servingSizeLabel || 'Serving'}: <strong>${servingSize}</strong></span>
+            <span class="spec-chip">📦 Shelf Life: <strong>3-4 Weeks (Airtight Jar)</strong></span>
+            <span class="spec-chip">💰 ${dict.estCostServingLabel || 'Cost'}: <strong>₹${mix.estimated_cost_per_serving.toFixed(2)}</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Instructions Block -->
+      <div class="modal-section-card">
+        <h5 class="modal-sec-title"><span>🍳</span> <span>${dict.instructionsLabel || 'Step-by-Step Cooking Instructions'}</span></h5>
+        <div class="mix-steps-list">
+          ${steps.map((st, i) => `
+            <div class="mix-step-item">
+              <span class="step-num">${i + 1}</span>
+              <p class="step-desc">${escapeHtml(st.replace(/^[0-9०-९१-४\.]+\s*/, ''))}</p>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <!-- Cost Breakdown Table (APMC Market Connection) -->
+      <div class="modal-section-card">
+        <h5 class="modal-sec-title"><span>📊</span> <span>${dict.costBreakdownLabel || 'Estimated Ingredient Cost Breakdown'}</span></h5>
+        <p style="font-size: 0.76rem; color: #666; margin-bottom: 8px;">
+          *Calculated portion cost for 1 single serving using APMC wholesale commodity baseline rates:
+        </p>
+        <div class="mix-cost-table-wrap">
+          <table class="mix-cost-table">
+            <thead>
+              <tr>
+                <th>Ingredient</th>
+                <th>Quantity</th>
+                <th>Market Rate Basis</th>
+                <th style="text-align: right;">Portion Cost</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${mix.ingredient_breakdown.map(item => `
+                <tr>
+                  <td><strong>${escapeHtml(item.name)}</strong></td>
+                  <td>${escapeHtml(item.amount)}</td>
+                  <td><span class="table-basis-tag">${escapeHtml(item.rate_basis)}</span></td>
+                  <td style="text-align: right; font-weight: 700; color: #2E7D32;">${escapeHtml(item.cost)}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="3" style="font-weight: 800;">Total Estimated Cost (1 Serving):</td>
+                <td style="text-align: right; font-weight: 800; font-size: 1.05rem; color: #2E7D32;">
+                  ₹${mix.estimated_cost_per_serving.toFixed(2)}*
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+
+      <!-- Clear Non-Commercial Disclaimer -->
+      <div class="mix-modal-disclaimer">
+        <div class="disc-title">⚠️ Non-Commercial Prototype Notice</div>
+        <p>
+          This homemade mix is an experimental meal-kit prototype created for budget planning and academic demonstration. 
+          It is not commercially packaged, branded, or certified by food regulatory authorities. 
+          All ingredient prices and cost per serving are unverified estimates derived from standard wholesale mandi baselines.
+        </p>
+      </div>
+    `;
+  }
+
+  elements.quickMixModal.classList.add('open');
+};
+
+window.closeQuickMixModal = function() {
+  if (elements.quickMixModal) {
+    elements.quickMixModal.classList.remove('open');
+  }
 };
 
 // 3. Today's Rates Grid
