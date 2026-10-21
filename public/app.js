@@ -704,44 +704,71 @@ function renderQuickMeals() {
       name_hi: 'इंस्टेंट पोहा मिक्स',
       name_mr: 'इन्स्टंट पोहे मिक्स',
       image_url: '/images/poha_mix.jpg',
-      prep_time: '5 mins',
-      prep_time_hi: '५ मिनट',
-      prep_time_mr: '५ मिनिटे',
-      serving_size_en: '1 Bowl (160g cooked)',
-      serving_size_hi: '१ प्लेट (१६० ग्राम तैयार)',
-      serving_size_mr: '१ प्लेट (१६० ग्रॅम तयार)',
+      label_url: '/images/poha_mix_label.png',
+      qr_url: '/images/mix_qr_code.png',
+      prep_time: '5-6 mins',
+      prep_time_hi: '५-६ मिनट',
+      prep_time_mr: '५-६ मिनिटे',
+      serving_size_en: '1 Bowl (~160g cooked) • 250g Jar (~4 Servings)',
+      serving_size_hi: '१ कटोरी (~१६० ग्राम तैयार) • २५० ग्राम जार (~४ प्लेट)',
+      serving_size_mr: '१ वाटी (~१६० ग्रॅम तयार) • २५० ग्रॅम बरणी (~४ प्लेट)',
       estimated_cost_per_serving: 6.50,
-      commercial_cup_cost: 45,
-      estimated_savings: 38.50,
-      is_estimate: true,
-      ingredients_list_en: 'Poha, Cumin, Mustard seeds, Turmeric, Salt, Fried chilli, Peanuts',
-      ingredients_list_hi: 'पोहा, जीरा, राई, हल्दी, नमक, तली हरी मिर्च, मूंगफली',
-      ingredients_list_mr: 'पोहे, जिरे, मोहरी, हळद, मीठ, तळलेली हिरवी मिरची, शेंगदाणे',
+      cost_status_label: 'Estimated ingredient cost per serving — prototype estimate; verification pending',
+      packaging_note: 'Packaging excluded from per-serving ingredient cost',
+      jar_net_wt: '250g',
+      jar_servings: 4,
+      jar_ingredient_cost: 26.00,
+      jar_packaging_cost: 70.00,
+      jar_total_prototype_cost: 96.00,
+      mrp_estimate: 99.00,
+      mrp_label: '₹99.00 (Market-Aligned Prototype MRP)',
+      commercial_comparison_status: 'Pending verification',
+      commercial_comparison_text: 'Commercial store comparison temporarily withheld pending lab verification of portion weights and shelf-life audit.',
+      exclusions_text: 'Total prototype cost per jar excludes: commercial factory overheads, manual labor, secondary logistics, GST, and distributor margins (verification pending).',
+      formulated_by: 'Sakshi Sutar',
+      lab_name: 'Nirmaan Lab',
+      ingredients_list_en: 'Poha, Peanuts, Cumin, Mustard seeds, Fried chilli, Turmeric, Salt',
+      ingredients_list_hi: 'पोहा, मूंगफली, जीरा, राई, तली हरी मिर्च, हल्दी, नमक',
+      ingredients_list_mr: 'पोहे, शेंगदाणे, जिरे, मोहरी, तळलेली हिरवी मिरची, हळद, मीठ',
+      nutrition_facts: {
+        serving: 'Per 100g dry mix (Jar: 250g)',
+        calories: '385 kcal',
+        fat: '8.5 g',
+        sodium: '420 mg',
+        carbs: '68.0 g',
+        protein: '9.2 g'
+      },
       ingredient_breakdown: [
-        { name: 'Thick Poha (Rice Flakes)', amount: '45g', rate_basis: 'APMC wholesale ₹42/kg', cost: '₹1.90' },
-        { name: 'Roasted Peanuts', amount: '10g', rate_basis: 'Wholesale ₹120/kg', cost: '₹1.20' },
-        { name: 'Mustard & Cumin Seeds', amount: '2g', rate_basis: 'Spice market ₹280/kg', cost: '₹0.60' },
-        { name: 'Fried Green Chilli', amount: '2g', rate_basis: 'APMC Live ₹48/kg', cost: '₹0.50' },
-        { name: 'Turmeric, Salt & Curry Leaf', amount: '1g', rate_basis: 'Pantry staples', cost: '₹0.80' },
-        { name: 'Cooking Steam / Fuel', amount: 'Boiling water', rate_basis: 'Domestic fuel', cost: '₹1.50' }
+        { name: 'Thick Poha (Rice Flakes)', amount: '45g', rate_basis: 'APMC wholesale ₹42/kg', cost: '₹1.90', type: 'APMC Wholesale Rate' },
+        { name: 'Roasted Peanuts', amount: '10g', rate_basis: 'Wholesale ₹120/kg', cost: '₹1.20', type: 'Market Baseline' },
+        { name: 'Mustard & Cumin Seeds', amount: '2g', rate_basis: 'Spice market ₹280/kg', cost: '₹0.60', type: 'Market Baseline' },
+        { name: 'Fried Green Chilli', amount: '2g', rate_basis: 'APMC Live ₹48/kg', cost: '₹0.50', type: 'APMC Live Rate' },
+        { name: 'Turmeric, Salt & Curry Leaf', amount: '1g', rate_basis: 'Pantry staples baseline', cost: '₹0.80', type: 'Pantry Baseline' },
+        { name: 'Cooking Steam / Fuel', amount: 'Boiling water', rate_basis: 'Domestic fuel estimate', cost: '₹1.50', type: 'Estimated Fuel' }
+      ],
+      jar_cost_breakdown: [
+        { item: 'Estimated Ingredients (250g Jar - 4 Servings)', cost: '₹26.00', basis: '4 servings × ₹6.50 portion estimate', badge: 'Estimate' },
+        { item: 'Glass Jar Packaging (Actual Entered Cost)', cost: '₹70.00', basis: 'Food-grade glass jar, airtight lid & label printing', badge: 'Entered Cost' },
+        { item: 'Total Prototype Cost per Jar', cost: '₹96.00', basis: 'Ingredients (₹26) + Packaging (₹70)', badge: 'Total Prototype' },
+        { item: 'Prototype Market MRP', cost: '₹99.00', basis: 'Benchmark market retail price (Incl. of all taxes)', badge: 'Market Price' }
       ],
       steps_en: [
-        'Empty the Instant Poha Mix (60g dry) into a heat-safe breakfast bowl or mug.',
-        'Pour approx. 90ml (1/2 cup) of rolling boiling water over the mix until just submerged.',
-        'Cover tightly with a plate and let it rest undisturbed for 4-5 minutes to steam through.',
-        'Gently fluff with a fork, squeeze a slice of fresh APMC lemon, and garnish with fresh coriander.'
+        'Boil 1½ cups (approx. 220ml) of clean drinking water in a pan or saucepan.',
+        'Add the Instant Poha Mix (approx. 60g portion for 1 serving) into the boiling water.',
+        'Cook on medium heat for 2-3 minutes, stirring gently until the poha softens and absorbs the seasoned moisture.',
+        'Remove from heat, cover with a lid for 1 minute to rest, fluff with a fork, and serve hot with fresh lemon.'
       ],
       steps_hi: [
-        'इंस्टेंट पोहा मिक्स (६० ग्राम) को एक कटोरी या मग में निकालें।',
-        'लगभग ९० मिली (आधा कप) खौलता हुआ गर्म पानी ऊपर से डालें ताकि पोहा भीग जाए।',
-        'ढक्कन लगाकर ४ से ५ मिनट के लिए भाप में पकने दें।',
-        'कांटे से धीरे से हिलाएं, ऊपर से ताज़ा नींबू निचोड़ें और हरा धनिया डालकर परोसें।'
+        'एक पैन या बर्तन में डेढ़ कप (लगभग २२० मिली) पानी उबालें।',
+        'उबलते पानी में इंस्टेंट पोहा मिक्स (६० ग्राम प्रति प्लेट) डालें।',
+        'मध्यम आंच पर २ से ३ मिनट पकाएं और धीरे-धीरे चम्मच से चलाएं जब तक पोहा पानी सोख कर मुलायम न हो जाए।',
+        'गैस बंद करें, १ मिनट के लिए ढक्कन रखकर भाप में रहने दें, कांटे से मोकळा करें और नींबू निचोड़कर गरमागरम परोसें।'
       ],
       steps_mr: [
-        'इन्स्टंट पोहे मिक्स (६० ग्रॅम) एका बाऊल किंवा डब्यात काढा.',
-        'वरून अंदाजे ९० मिली (अर्धा कप) कडक उकळते पाणी पोहे भिजतील इतके घाला.',
-        'झाकण ठेवून ४ ते ५ मिनिटे वाफेवर स्थिर राहू द्या.',
-        'झाकण उघडून चमच्याने मोकळे करा, वरून ताजा लिंबू पिळा आणि बारीक कोथिंबीर घालून गरमागरम आस्वाद घ्या.'
+        'एका पातेल्यात दीड कप (अंदाजे २२० मिली) पाणी चांगले उकळून घ्या.',
+        'उकळत्या पाण्यात इन्स्टंट पोहे मिक्स (६० ग्रॅम प्रति प्लेट) घाला.',
+        'मध्यम आचेवर २ ते ३ मिनिटे शिजवा, पोहे पाणी शोषून मऊ होईपर्यंत हलक्या हाताने ढवळा.',
+        'गॅस बंद करून १ मिनिट झाकण ठेवा, चमच्याने मोकळे करा आणि लिंबू पिळून गरमागरम आस्वाद घ्या.'
       ]
     },
     {
@@ -750,44 +777,71 @@ function renderQuickMeals() {
       name_hi: 'इंस्टेंट उपमा मिक्स',
       name_mr: 'इन्स्टंट उपमा मिक्स',
       image_url: '/images/upma_mix.jpg',
-      prep_time: '6 mins',
-      prep_time_hi: '६ मिनट',
-      prep_time_mr: '६ मिनिटे',
-      serving_size_en: '1 Bowl (180g cooked)',
-      serving_size_hi: '१ प्लेट (१८० ग्राम तैयार)',
-      serving_size_mr: '१ प्लेट (१८० ग्रॅम तयार)',
+      label_url: '/images/upma_mix_label.png',
+      qr_url: '/images/mix_qr_code.png',
+      prep_time: '5-6 mins',
+      prep_time_hi: '५-६ मिनट',
+      prep_time_mr: '५-६ मिनिटे',
+      serving_size_en: '1 Bowl (~180g cooked) • 250g Jar (~4 Servings)',
+      serving_size_hi: '१ कटोरी (~१८० ग्राम तैयार) • २५० ग्राम जार (~४ प्लेट)',
+      serving_size_mr: '१ वाटी (~१८० ग्रॅम तयार) • २५० ग्रॅम बरणी (~४ प्लेट)',
       estimated_cost_per_serving: 5.80,
-      commercial_cup_cost: 45,
-      estimated_savings: 39.20,
-      is_estimate: true,
-      ingredients_list_en: 'Roasted semolina (rava), Mustard seeds, Cumin, Fried chilli, Peanuts, Salt',
-      ingredients_list_hi: 'भुनी सूजी (रवा), राई, जीरा, तली हरी मिर्च, मूंगफली, नमक',
-      ingredients_list_mr: 'भाजलेला रवा, मोहरी, जिरे, तळलेली हिरवी मिरची, शेंगदाणे, मीठ',
+      cost_status_label: 'Estimated ingredient cost per serving — prototype estimate; verification pending',
+      packaging_note: 'Packaging excluded from per-serving ingredient cost',
+      jar_net_wt: '250g',
+      jar_servings: 4,
+      jar_ingredient_cost: 23.20,
+      jar_packaging_cost: 70.00,
+      jar_total_prototype_cost: 93.20,
+      mrp_estimate: 95.00,
+      mrp_label: '₹95.00 (Market-Aligned Prototype MRP)',
+      commercial_comparison_status: 'Pending verification',
+      commercial_comparison_text: 'Commercial store comparison temporarily withheld pending lab verification of portion weights and shelf-life audit.',
+      exclusions_text: 'Total prototype cost per jar excludes: commercial factory overheads, manual labor, secondary logistics, GST, and distributor margins (verification pending).',
+      formulated_by: 'Sakshi Sutar',
+      lab_name: 'Nirmaan Lab',
+      ingredients_list_en: 'Roasted semolina (rava/suji), Peanuts, Mustard seeds, Cumin, Fried chilli, Salt',
+      ingredients_list_hi: 'भुनी सूजी (रवा), मूंगफली, राई, जीरा, तली हरी मिर्च, नमक',
+      ingredients_list_mr: 'भाजलेला रवा, शेंगदाणे, मोहरी, जिरे, तळलेली हिरवी मिरची, मीठ',
+      nutrition_facts: {
+        serving: 'Per 100g dry mix (Jar: 250g)',
+        calories: '380 kcal',
+        fat: '7.2 g',
+        sodium: '440 mg',
+        carbs: '67.5 g',
+        protein: '11.5 g'
+      },
       ingredient_breakdown: [
-        { name: 'Roasted Semolina (Rava)', amount: '45g', rate_basis: 'APMC wholesale ₹38/kg', cost: '₹1.70' },
-        { name: 'Roasted Peanuts', amount: '8g', rate_basis: 'Wholesale ₹120/kg', cost: '₹0.96' },
-        { name: 'Mustard & Cumin Seeds', amount: '3g', rate_basis: 'Spice market ₹280/kg', cost: '₹0.75' },
-        { name: 'Fried Green Chilli', amount: '2g', rate_basis: 'APMC Live ₹48/kg', cost: '₹0.50' },
-        { name: 'Salt & Roasting Ghee/Oil', amount: '2g', rate_basis: 'Pantry staples', cost: '₹0.89' },
-        { name: 'Simmering Fuel', amount: '180ml water', rate_basis: 'Domestic fuel', cost: '₹1.00' }
+        { name: 'Roasted Semolina (Rava / Suji)', amount: '45g', rate_basis: 'APMC wholesale ₹38/kg', cost: '₹1.70', type: 'APMC Wholesale Rate' },
+        { name: 'Roasted Peanuts', amount: '8g', rate_basis: 'Wholesale ₹120/kg', cost: '₹0.96', type: 'Market Baseline' },
+        { name: 'Mustard & Cumin Seeds', amount: '3g', rate_basis: 'Spice market ₹280/kg', cost: '₹0.75', type: 'Market Baseline' },
+        { name: 'Fried Green Chilli', amount: '2g', rate_basis: 'APMC Live ₹48/kg', cost: '₹0.50', type: 'APMC Live Rate' },
+        { name: 'Salt & Roasting Ghee/Oil', amount: '2g', rate_basis: 'Pantry staples baseline', cost: '₹0.89', type: 'Pantry Baseline' },
+        { name: 'Simmering Fuel', amount: 'Water boiling', rate_basis: 'Domestic fuel estimate', cost: '₹1.00', type: 'Estimated Fuel' }
+      ],
+      jar_cost_breakdown: [
+        { item: 'Estimated Ingredients (250g Jar - 4 Servings)', cost: '₹23.20', basis: '4 servings × ₹5.80 portion estimate', badge: 'Estimate' },
+        { item: 'Glass Jar Packaging (Actual Entered Cost)', cost: '₹70.00', basis: 'Food-grade glass jar, airtight lid & label printing', badge: 'Entered Cost' },
+        { item: 'Total Prototype Cost per Jar', cost: '₹93.20', basis: 'Ingredients (₹23.20) + Packaging (₹70)', badge: 'Total Prototype' },
+        { item: 'Prototype Market MRP', cost: '₹95.00', basis: 'Benchmark market retail price (Incl. of all taxes)', badge: 'Market Price' }
       ],
       steps_en: [
-        'Bring 1.25 cups (approx. 180ml) of water to a rolling boil in a small saucepan.',
-        'Gradually pour in the Instant Upma Mix while stirring continuously to prevent any lumps from forming.',
-        'Cover with a lid and simmer gently on low flame for 3 minutes until all water is fully absorbed.',
-        'Turn off flame, let sit covered for 1 minute, and serve hot with coconut chutney or a spoonful of desi ghee.'
+        'Boil 1½ cups (approx. 220ml) of clean drinking water in a saucepan.',
+        'Lower flame and gradually pour in the Instant Upma Mix while stirring continuously to prevent any lumps from forming.',
+        'Cook on medium heat for 2-3 minutes until the batter thickens and turns aromatic.',
+        'Turn off flame, let sit covered with a lid for 1 minute for fluffy texture, and serve hot with coconut chutney or desi ghee.'
       ],
       steps_hi: [
-        'एक छोटे पैन में सवा कप (लगभग १८० मिली) पानी उबाल लें।',
-        'आंच धीमी करें और धीरे-धीरे इंस्टेंट उपमा मिक्स डालते हुए लगातार चम्मच से चलाएं ताकि गांठें न पड़ें।',
-        'ढक्कन लगाकर ३ मिनट धीमी आंच पर पकने दें जब तक पानी पूरी तरह सोख न ले।',
-        'गैस बंद करें, १ मिनट ढककर रखें और ऊपर से १ चम्मच देसी घी या नारियल चटनी के साथ गरमागरम परोसें।'
+        'एक पैन में डेढ़ कप (लगभग २२० मिली) पानी उबाल लें।',
+        'आंच धीमी करें और धीरे-धीरे इंस्टेंट उपमा मिक्स डालते हुए लगातार चम्मच से चलाएं ताकि कोई गांठ न पड़े।',
+        'मध्यम आंच पर २ से ३ मिनट पकाएं जब तक मिश्रण गाढ़ा और खुशबूदार न हो जाए।',
+        'गैस बंद करें, १ मिनट ढककर रखें ताकि उपमा खिला-खिला बने और देसी घी या चटनी के साथ परोसें।'
       ],
       steps_mr: [
-        'एका लहान पातेल्यात सव्वा कप (अंदाजे १८० मिली) पाणी चांगले उकळून घ्या.',
-        'गॅस मंद करा आणि इन्स्टंट उपमा मिक्स हळूहळू ओता व गुठळ्या होऊ नयेत म्हणून चमच्याने ढवळत राहा.',
-        'झाकण ठेवून ३ मिनिटे मंद आचेवर पाणी शोषून घेईपर्यंत वाफ काढा.',
-        'गॅस बंद करून १ मिनिट झाकून ठेवा आणि खोबऱ्याच्या चटणीसोबत किंवा साजूक तूप घालून गरमागरम वाढा.'
+        'एका पातेल्यात दीड कप (अंदाजे २२० मिली) पाणी चांगले उकळून घ्या.',
+        'गॅस मंद करा आणि इन्स्टंट उपमा मिक्स हळूहळू ओता व गुठळ्या होऊ नयेत म्हणून सतत ढवळत राहा.',
+        'मध्यम आचेवर २ ते ३ मिनिटे पीठ घट्ट व खमंग होईपर्यंत शिजवा.',
+        'गॅस बंद करून १ मिनिट झाकून ठेवा आणि साजूक तूप किंवा खोबऱ्याच्या चटणीसोबत गरमागरम वाढा.'
       ]
     }
   ];
@@ -807,13 +861,16 @@ function renderQuickMeals() {
           <img src="${mix.image_url}" alt="${escapeHtml(title)}" class="quick-mix-img" loading="lazy">
           <div class="quick-mix-badges-overlay">
             <span class="mix-badge time">⏱️ ${prepTime}</span>
-            <span class="mix-badge prototype">🧪 ${dict.quickMealsBadge || 'Homemade Trial'}</span>
+            <span class="mix-badge prototype">🧪 Nirmaan Lab</span>
           </div>
         </div>
 
         <div class="quick-mix-content">
           <div class="quick-mix-header">
-            <h3 class="quick-mix-title">${escapeHtml(title)}</h3>
+            <div>
+              <span class="mix-author-chip">👩‍🔬 Sakshi Sutar • Nirmaan Lab</span>
+              <h3 class="quick-mix-title">${escapeHtml(title)}</h3>
+            </div>
             <span class="quick-mix-serving">🥣 ${servingSize}</span>
           </div>
 
@@ -824,6 +881,7 @@ function renderQuickMeals() {
             </div>
           </div>
 
+          <!-- Provisional Cost Card with Strict Estimate & Packaging Exclusion Labeling -->
           <div class="quick-mix-cost-card">
             <div class="cost-row-main">
               <div class="cost-figure-wrap">
@@ -831,16 +889,22 @@ function renderQuickMeals() {
                 <span class="cost-val">${mix.estimated_cost_per_serving.toFixed(2)}</span>
                 <span class="cost-unit">/ serving</span>
               </div>
-              <span class="cost-est-tag">*Estimated Prototype Cost</span>
+              <span class="cost-est-tag">⚠️ Provisional Estimate</span>
             </div>
             
-            <div class="mix-savings-pill">
-              <span>✨</span>
-              <span>${dict.commercialCompLabel || 'Save ~₹35 vs store cup (₹45)'}</span>
+            <div class="cost-status-alert">
+              <strong>${dict.costStatusLabel || 'Estimated ingredient cost per serving — prototype estimate; verification pending.'}</strong>
             </div>
-            
-            <div class="cost-disclaimer-sub">
-              ${dict.unverifiedCostNotice || '*Unverified prototype estimate based on APMC wholesale baseline rates.'}
+
+            <div class="cost-pkg-note">
+              <span>📦</span>
+              <span>${dict.packagingExcludedNote || 'Packaging excluded from per-serving cost (₹70 reusable glass jar entered separately)'}</span>
+            </div>
+
+            <!-- Comparison Section Temporarily Marked Pending Verification (Savings claim removed) -->
+            <div class="mix-comparison-pending-pill">
+              <span>🔒</span>
+              <span>${dict.commercialCompPending || 'Commercial store comparison pending verification'}</span>
             </div>
           </div>
 
@@ -863,32 +927,45 @@ window.openQuickMixModal = function(mixId) {
   const prepTime = state.currentLang === 'hi' ? mix.prep_time_hi : state.currentLang === 'mr' ? mix.prep_time_mr : mix.prep_time;
   const servingSize = state.currentLang === 'hi' ? mix.serving_size_hi : state.currentLang === 'mr' ? mix.serving_size_mr : mix.serving_size_en;
   const steps = state.currentLang === 'hi' ? mix.steps_hi : state.currentLang === 'mr' ? mix.steps_mr : mix.steps_en;
+  const nutri = mix.nutrition_facts || { calories: '385 kcal', fat: '8.5 g', sodium: '420 mg', carbs: '68 g', protein: '9.2 g' };
 
   if (elements.quickMixModalName) {
-    elements.quickMixModalName.textContent = title;
+    elements.quickMixModalName.textContent = `${title} • Nirmaan Lab`;
   }
 
   if (elements.quickMixModalBody) {
     elements.quickMixModalBody.innerHTML = `
+      <!-- Innovator & Lab Credit Banner -->
+      <div class="modal-lab-banner">
+        <div class="lab-banner-badge">
+          <span>🏛️</span>
+          <span>NIRMAAN LAB INNOVATION PROTOTYPE</span>
+        </div>
+        <div class="lab-banner-author">
+          Formulated & Packaged by: <strong>Sakshi Sutar</strong> (Student Innovator)
+        </div>
+      </div>
+
+      <!-- Hero Header -->
       <div class="mix-modal-hero">
-        <img src="${mix.image_url}" alt="${escapeHtml(title)}" class="mix-modal-photo">
+        <img src="${mix.image_url}" alt="${escapeHtml(title)}" class="mix-modal-photo" title="Click to view packaging label">
         <div class="mix-modal-hero-details">
           <h4>${escapeHtml(title)}</h4>
           <p style="font-size: 0.82rem; color: #555; margin-bottom: 8px;">
-            Homemade ready-to-cook dry breakfast premix kit. Just add boiling water for a wholesome, fresh meal in minutes.
+            Tested homemade ready-to-cook dry breakfast premix kit. Just add boiling water for a wholesome, fresh meal in 5-6 minutes.
           </p>
           <div class="modal-spec-chips">
             <span class="spec-chip">⏱️ ${dict.prepTimeLabel || 'Prep Time'}: <strong>${prepTime}</strong></span>
             <span class="spec-chip">🥣 ${dict.servingSizeLabel || 'Serving'}: <strong>${servingSize}</strong></span>
-            <span class="spec-chip">📦 Shelf Life: <strong>3-4 Weeks (Airtight Jar)</strong></span>
-            <span class="spec-chip">💰 ${dict.estCostServingLabel || 'Cost'}: <strong>₹${mix.estimated_cost_per_serving.toFixed(2)}</strong></span>
+            <span class="spec-chip">📦 Shelf Life: <strong>60 Days (Glass Jar)</strong></span>
+            <span class="spec-chip">🏷️ Prototype MRP: <strong>₹${mix.mrp_estimate ? mix.mrp_estimate.toFixed(2) : '99.00'}</strong></span>
           </div>
         </div>
       </div>
 
-      <!-- Instructions Block -->
+      <!-- 1. Cooking Instructions (Realistic Tested Steps) -->
       <div class="modal-section-card">
-        <h5 class="modal-sec-title"><span>🍳</span> <span>${dict.instructionsLabel || 'Step-by-Step Cooking Instructions'}</span></h5>
+        <h5 class="modal-sec-title"><span>🍳</span> <span>${dict.instructionsLabel || 'Step-by-Step Cooking Instructions (Tested Homemade Recipe)'}</span></h5>
         <div class="mix-steps-list">
           ${steps.map((st, i) => `
             <div class="mix-step-item">
@@ -899,11 +976,11 @@ window.openQuickMixModal = function(mixId) {
         </div>
       </div>
 
-      <!-- Cost Breakdown Table (APMC Market Connection) -->
+      <!-- 2. Cost Breakdown: Ingredient Names, Quantities & Available Market Rates -->
       <div class="modal-section-card">
-        <h5 class="modal-sec-title"><span>📊</span> <span>${dict.costBreakdownLabel || 'Estimated Ingredient Cost Breakdown'}</span></h5>
+        <h5 class="modal-sec-title"><span>📊</span> <span>${dict.costBreakdownLabel || 'Per-Serving Ingredient Cost Breakdown'}</span></h5>
         <p style="font-size: 0.76rem; color: #666; margin-bottom: 8px;">
-          *Calculated portion cost for 1 single serving using APMC wholesale commodity baseline rates:
+          *Single serving ingredient portions with market-price source connections. <strong>Packaging excluded:</strong>
         </p>
         <div class="mix-cost-table-wrap">
           <table class="mix-cost-table">
@@ -911,7 +988,7 @@ window.openQuickMixModal = function(mixId) {
               <tr>
                 <th>Ingredient</th>
                 <th>Quantity</th>
-                <th>Market Rate Basis</th>
+                <th>Rate Basis / Source</th>
                 <th style="text-align: right;">Portion Cost</th>
               </tr>
             </thead>
@@ -927,9 +1004,12 @@ window.openQuickMixModal = function(mixId) {
             </tbody>
             <tfoot>
               <tr>
-                <td colspan="3" style="font-weight: 800;">Total Estimated Cost (1 Serving):</td>
-                <td style="text-align: right; font-weight: 800; font-size: 1.05rem; color: #2E7D32;">
-                  ₹${mix.estimated_cost_per_serving.toFixed(2)}*
+                <td colspan="3" style="font-weight: 800;">
+                  Total Estimated Ingredient Cost (1 Serving):
+                  <div style="font-size: 0.7rem; font-weight: 600; color: #888;">*Prototype estimate; verification pending. Excludes packaging.</div>
+                </td>
+                <td style="text-align: right; font-weight: 900; font-size: 1.1rem; color: #2E7D32;">
+                  ₹${mix.estimated_cost_per_serving.toFixed(2)}
                 </td>
               </tr>
             </tfoot>
@@ -937,13 +1017,111 @@ window.openQuickMixModal = function(mixId) {
         </div>
       </div>
 
-      <!-- Clear Non-Commercial Disclaimer -->
+      <!-- 3. Full Jar Unit Economics (250g Jar = 4 Servings, ₹70 Packaging, Exclusions) -->
+      <div class="modal-section-card jar-economics-card">
+        <h5 class="modal-sec-title"><span>🏺</span> <span>${dict.jarEconomicsTitle || 'Full 250g Jar Prototype Economics (4 Servings)'}</span></h5>
+        <div class="mix-cost-table-wrap">
+          <table class="mix-cost-table">
+            <thead>
+              <tr>
+                <th>Item / Component</th>
+                <th>Quantity / Basis</th>
+                <th style="text-align: right;">Cost / Rate</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Ingredients for Full 250g Jar</strong></td>
+                <td>4 Servings × ₹${mix.estimated_cost_per_serving.toFixed(2)} portion estimate</td>
+                <td style="text-align: right; font-weight: 700; color: #2E7D32;">₹${mix.jar_ingredient_cost ? mix.jar_ingredient_cost.toFixed(2) : (mix.estimated_cost_per_serving * 4).toFixed(2)}</td>
+              </tr>
+              <tr style="background: #FFF9C4;">
+                <td><strong>Food-Grade Glass Jar Packaging</strong> <span class="cost-tag-actual">Actual Entered Cost</span></td>
+                <td>Reusable glass jar + hermetic red lid + waterproof label</td>
+                <td style="text-align: right; font-weight: 800; color: #D84315;">₹${(mix.jar_packaging_cost || 70).toFixed(2)}</td>
+              </tr>
+              <tr style="background: #E8F5E9; border-top: 2px solid var(--color-dark);">
+                <td><strong>Total Prototype Cost per Jar</strong></td>
+                <td>Sum of known prototype inputs (Ingredients + Packaging)</td>
+                <td style="text-align: right; font-weight: 900; font-size: 1.1rem; color: #1B5E20;">₹${(mix.jar_total_prototype_cost || 96).toFixed(2)}</td>
+              </tr>
+              <tr style="background: #FBE9E7;">
+                <td><strong>Prototype Market MRP Benchmark</strong></td>
+                <td>Market-aligned retail price for 250g premium reusable jar</td>
+                <td style="text-align: right; font-weight: 900; font-size: 1.1rem; color: #B71C1C;">₹${(mix.mrp_estimate || 99).toFixed(2)}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Cost Exclusions Explicit Notice -->
+        <div class="exclusions-notice-box">
+          <span class="excl-icon">ℹ️</span>
+          <div class="excl-text">
+            <strong>Exclusions:</strong> ${dict.exclusionsNotice || 'Total prototype cost per jar excludes: commercial factory overheads, manual blending/packaging labor, secondary logistics, GST, and distributor margins (all pending formal verification).'}
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. Nutrition Facts Box (Filled for 250g Jar / 100g) -->
+      <div class="modal-section-card">
+        <h5 class="modal-sec-title"><span>🥗</span> <span>Nutrition Facts (Per 100g Dry Mix / 250g Net)</span></h5>
+        <div class="nutri-grid-display">
+          <div class="nutri-pill">
+            <span class="nutri-val">${nutri.calories}</span>
+            <span class="nutri-lbl">Calories</span>
+          </div>
+          <div class="nutri-pill">
+            <span class="nutri-val">${nutri.carbs}</span>
+            <span class="nutri-lbl">Carbs</span>
+          </div>
+          <div class="nutri-pill">
+            <span class="nutri-val">${nutri.protein}</span>
+            <span class="nutri-lbl">Protein</span>
+          </div>
+          <div class="nutri-pill">
+            <span class="nutri-val">${nutri.fat}</span>
+            <span class="nutri-lbl">Fat</span>
+          </div>
+          <div class="nutri-pill">
+            <span class="nutri-val">${nutri.sodium}</span>
+            <span class="nutri-lbl">Sodium</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. Commercial Cup Comparison (Hidden / Marked "Pending Verification") -->
+      <div class="modal-section-card comparison-pending-box">
+        <h5 class="modal-sec-title" style="color: #6D4C41;"><span>🔒</span> <span>Commercial Store Comparison — Pending Verification</span></h5>
+        <p style="font-size: 0.8rem; color: #6D4C41; margin: 0; line-height: 1.45;">
+          Direct percentage savings claims vs commercial instant cups (₹45-₹50) are temporarily withheld. 
+          Verification is in progress for equivalent dried portion weights, shelf-life testing, and retail supermarket audits.
+        </p>
+      </div>
+
+      <!-- 6. Official Packaging Label Preview with QR Code -->
+      <div class="modal-section-card">
+        <h5 class="modal-sec-title"><span>🏷️</span> <span>Official Packaging Label with QR Code & Traceability</span></h5>
+        <p style="font-size: 0.78rem; color: #555; margin-bottom: 10px;">
+          Created for Nirmaan Lab prototype evaluation. Contains QR code linking to APMC mandi rates and live product traceability.
+        </p>
+        <div class="label-preview-container">
+          <a href="${mix.label_url || mix.image_url}" target="_blank" rel="noopener noreferrer" title="Click to view full high-resolution label">
+            <img src="${mix.label_url || mix.image_url}" alt="${escapeHtml(title)} Packaging Label" class="label-preview-img">
+          </a>
+          <div class="label-preview-caption">
+            <span>📷 High-Resolution 250g Jar Packaging Label • Click image to open full size</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 7. Strict Prototype Disclaimer -->
       <div class="mix-modal-disclaimer">
-        <div class="disc-title">⚠️ Non-Commercial Prototype Notice</div>
+        <div class="disc-title">⚠️ Provisional Prototype Evaluation Notice</div>
         <p>
-          This homemade mix is an experimental meal-kit prototype created for budget planning and academic demonstration. 
-          It is not commercially packaged, branded, or certified by food regulatory authorities. 
-          All ingredient prices and cost per serving are unverified estimates derived from standard wholesale mandi baselines.
+          These figures are academic meal-kit prototypes formulated by Sakshi Sutar at Nirmaan Lab. 
+          Cost figures distinguish measured packaging inputs (₹70 jar), APMC wholesale baseline market rates, and unverified domestic fuel estimates. 
+          Not commercially certified or distributed.
         </p>
       </div>
     `;

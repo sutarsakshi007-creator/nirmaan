@@ -2389,6 +2389,202 @@ body {
   margin: 0;
 }
 
+/* ==========================================================================
+   NIRMAAN LAB & SAKSHI SUTAR PROTOTYPE LABELS & CARDS
+   ========================================================================== */
+.section-author-tag {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #921D16;
+  background: #FBE9E7;
+  border: 1px solid rgba(146, 29, 22, 0.25);
+  border-radius: var(--radius-pill);
+  padding: 2px 9px;
+  margin-left: 6px;
+  margin-bottom: 4px;
+}
+
+.mix-author-chip {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #921D16;
+  background: #FFEBEE;
+  border-radius: 4px;
+  padding: 1px 6px;
+  margin-bottom: 4px;
+  letter-spacing: 0.3px;
+}
+
+.cost-status-alert {
+  font-size: 0.72rem;
+  color: #B71C1C;
+  background: #FFEBEE;
+  border-left: 3px solid #D32F2F;
+  padding: 5px 8px;
+  border-radius: 3px;
+  margin-bottom: 6px;
+  line-height: 1.35;
+}
+
+.cost-pkg-note {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.7rem;
+  color: #5D4037;
+  background: #EFEBE9;
+  padding: 4px 8px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.mix-comparison-pending-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #ECEFF1;
+  color: #455A64;
+  font-size: 0.71rem;
+  font-weight: 700;
+  padding: 4px 9px;
+  border-radius: var(--radius-pill);
+  border: 1px dashed #90A4AE;
+}
+
+.modal-lab-banner {
+  background: linear-gradient(135deg, #921D16 0%, #6E120C 100%);
+  color: #FFFFFF;
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  margin-bottom: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  box-shadow: 2px 2px 0 var(--color-dark);
+}
+
+.lab-banner-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+}
+
+.lab-banner-author {
+  font-size: 0.78rem;
+  color: #F8D7DA;
+}
+
+.lab-banner-author strong {
+  color: #FFFFFF;
+}
+
+.cost-tag-actual {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #BF360C;
+  background: #FFCCBC;
+  padding: 1px 6px;
+  border-radius: 3px;
+  margin-left: 6px;
+  text-transform: uppercase;
+}
+
+.exclusions-notice-box {
+  margin-top: 10px;
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  background: #FBE9E7;
+  border: 1px solid #FFAB91;
+  border-radius: 6px;
+  padding: 8px 10px;
+}
+
+.excl-icon {
+  font-size: 0.95rem;
+}
+
+.excl-text {
+  font-size: 0.72rem;
+  color: #4E342E;
+  line-height: 1.35;
+}
+
+.nutri-grid-display {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(85px, 1fr));
+  gap: 8px;
+}
+
+.nutri-pill {
+  background: var(--color-cream);
+  border: 1.5px solid var(--color-dark);
+  border-radius: var(--radius-md);
+  padding: 8px 6px;
+  text-align: center;
+  box-shadow: 1.5px 1.5px 0 var(--color-dark);
+}
+
+.nutri-val {
+  display: block;
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--color-dark);
+}
+
+.nutri-lbl {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--color-dark-muted);
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.comparison-pending-box {
+  background: #ECEFF1;
+  border: 1.5px dashed #90A4AE;
+}
+
+.label-preview-container {
+  text-align: center;
+  background: #FDFDFD;
+  border: 1.5px solid var(--color-dark);
+  border-radius: var(--radius-md);
+  padding: 10px;
+  box-shadow: 2px 2px 0 var(--color-dark);
+}
+
+.label-preview-img {
+  width: 100%;
+  max-height: 280px;
+  object-fit: contain;
+  border-radius: 4px;
+  cursor: zoom-in;
+  transition: transform 0.2s ease;
+}
+
+.label-preview-img:hover {
+  transform: scale(1.02);
+}
+
+.label-preview-caption {
+  font-size: 0.72rem;
+  color: var(--color-dark-muted);
+  font-weight: 600;
+  margin-top: 6px;
+}
+
 @media (max-width: 600px) {
   .quick-meals-grid {
     grid-template-columns: 1fr;
