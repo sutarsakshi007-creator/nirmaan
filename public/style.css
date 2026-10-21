@@ -2128,49 +2128,6 @@ body {
   color: var(--color-dark);
 }
 
-.quick-mix-specs-card {
-  background: linear-gradient(135deg, #FFFDF9 0%, #F5F1EA 100%);
-  border: 2px solid var(--color-dark);
-  border-radius: var(--radius-md);
-  padding: 12px;
-  margin-bottom: 14px;
-  box-shadow: 2px 2px 0 var(--color-dark);
-}
-
-.specs-row-main {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-}
-
-.specs-mrp-wrap {
-  display: flex;
-  align-items: baseline;
-  gap: 5px;
-}
-
-.specs-mrp-label {
-  font-family: var(--font-heading);
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: var(--color-dark-muted);
-}
-
-.specs-mrp-val {
-  font-family: var(--font-poster);
-  font-size: 1.6rem;
-  font-weight: 900;
-  color: #B71C1C;
-  line-height: 1;
-}
-
-.specs-mrp-sub {
-  font-size: 0.72rem;
-  font-weight: 700;
-  color: var(--color-dark-muted);
-}
-
 .quick-mix-cost-card {
   background: linear-gradient(135deg, #E8F5E9 0%, #F1F8E9 100%);
   border: 2px solid var(--color-dark);
